@@ -1,14 +1,17 @@
 services:
   php:
     build: ./docker/services/php
-    entrypoint: php -S 0.0.0.0:80 -t /var/www/public
+    entrypoint: 'php -S 0.0.0.0:80 -t /var/www/public'
     ports:
       - "8080:80"
     volumes:
       - './:/var/www'
+      - './docker/services/php/conf_d/php.ini:/usr/local/etc/php/conf.d/99-custom.ini'
     links:
       - mysql
     restart: always
+    environment:
+      PHP_IDE_CONFIG: serverName=defaultServer
 
   mysql:
     image: mysql:5.7
