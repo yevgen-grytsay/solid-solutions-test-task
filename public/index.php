@@ -1,17 +1,36 @@
 <?php
 
-$date = date('Y-m-d H:i:s');
+use Lib\ErrorRenderer;
+use Lib\Request;
+use Lib\Response;
+use Lib\Router;
+use Lib\Router\FunctionRequestHandler;
 
-$pdo = new PDO("mysql:host=mysql;dbname=app", "uapp", "uapp123");
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$stmt = $pdo->query("SELECT VERSION() as `version`");
+$router = (new Router())
+    ->get('/get-all', FunctionRequestHandler::create(function (Request $request) {
+        return new Response(sprintf("Hello, \"%s\"", $request->getPath()));
+    }))
+    ->post('/create', FunctionRequestHandler::create(function (Request $request) {
+        throw new \Lib\HttpException('Method "create" not implemented', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }))
+    ->post('/delete', FunctionRequestHandler::create(function (Request $request) {
+        throw new \Lib\HttpException('Method "delete" not implemented', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }))
+;
 
-$mysql = "ERR";
-if (false !== $stmt) {
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $mysql = sprintf("%s=%s", key($row), current($row));
+
+$request = Request::createFromGlobals();
+try {
+    $response = $router->dispatch($request);
+} catch(Throwable $e) {
+    // var_dump($e);
+    $response = (new ErrorRenderer())->render($e);
 }
-?>
 
-<p>Date: <?= $date ?></p>
-<p>MySql: <?= $mysql ?></p>
+foreach ($response->headers as $name => $value) {
+    header($name . ': ' . $value);
+}
+
+echo $response->body;

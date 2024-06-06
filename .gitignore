@@ -8,3 +8,5 @@ composer.phar
 /docker/data
 
 /.idea
+
+/.php-cs-fixer.cache
