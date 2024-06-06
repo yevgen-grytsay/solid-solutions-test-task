@@ -1,0 +1,25 @@
+services:
+  php:
+    build: ./docker/services/php
+    entrypoint: php -S 0.0.0.0:80 -t /var/www/public
+    ports:
+      - "8080:80"
+    volumes:
+      - './:/var/www'
+    links:
+      - mysql
+    restart: always
+
+  mysql:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - '33006:3306'
+    volumes:
+      - './docker/data/mysql:/var/lib/mysql'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'qwe123'
+      MYSQL_DATABASE: 'app'
+      MYSQL_USER: 'uapp'
+      MYSQL_PASSWORD: 'uapp123'

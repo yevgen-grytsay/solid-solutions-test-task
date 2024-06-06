@@ -1,0 +1,20 @@
+{
+    "name": "yevhen-hrytsai/solid-solutions-test",
+    "description": "Test task",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yevhen Hrytsai",
+            "email": "yevgen.grytsay@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*"
+    }
+}
