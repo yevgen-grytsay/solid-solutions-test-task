@@ -6,6 +6,9 @@ use Lib\Request;
 
 class RequestPredicateBuilder implements RequestPredicateInterface
 {
+    /**
+     * @var RequestPredicateInterface[]
+     */
     private array $predicates = [];
 
     public static function from(RequestPredicateInterface $predicate): self
@@ -21,6 +24,7 @@ class RequestPredicateBuilder implements RequestPredicateInterface
         return new self();
     }
 
+    /** @psalm-api */
     public function withPredicate(RequestPredicateInterface $predicate): self
     {
         $predicates = $this->predicates;

@@ -16,8 +16,10 @@ class CallableRequestPredicate implements RequestPredicateInterface
         $this->predicate = $predicate;
     }
 
+    /** @psalm-suppress MixedInferredReturnType */
     public function match(Request $request): bool
     {
+        /** @psalm-suppress MixedReturnStatement */
         return call_user_func($this->predicate, $request);
     }
 }

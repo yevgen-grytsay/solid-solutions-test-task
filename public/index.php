@@ -9,26 +9,38 @@ use Lib\Router\FunctionRequestHandler;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $router = (new Router())
-    ->get('/get-all', FunctionRequestHandler::create(function (Request $request) {
-        return Response::jsonError([
-            'success' => true,
-            'data' => [
-                'tree' => [
-                    'root' => [
-                        'id' => 1,
-                        'name' => 'Content Root method=' . $request->getMethod(),
-                        'children' => [],
-                    ]
+    ->get(
+        '/get-all',
+        FunctionRequestHandler::create(function (Request $request) {
+            return Response::jsonError([
+                'success' => true,
+                'data' => [
+                    'tree' => [
+                        'root' => [
+                            'id' => 1,
+                            'name' => 'Content Root method=' . $request->getMethod(),
+                            'children' => [],
+                        ]
+                    ],
                 ],
-            ],
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
-    }))
-    ->post('/create', FunctionRequestHandler::create(function (Request $request) {
-        throw new \Lib\HttpException('Method "create" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
-    }))
-    ->post('/delete', FunctionRequestHandler::create(function (Request $request) {
-        throw new \Lib\HttpException('Method "delete" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
-    }))
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        })
+            ->withName('get-all-handler')
+    )
+    ->post(
+        '/create',
+        FunctionRequestHandler::create(function (Request $request) {
+            throw new \Lib\HttpException('Method "create" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        })
+            ->withName('create-handler')
+    )
+    ->post(
+        '/delete',
+        FunctionRequestHandler::create(function (Request $request) {
+            throw new \Lib\HttpException('Method "delete" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        })
+            ->withName('delete-handler')
+    )
 ;
 
 

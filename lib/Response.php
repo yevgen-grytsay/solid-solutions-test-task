@@ -4,6 +4,7 @@ namespace Lib;
 
 use LogicException;
 
+/** @psalm-api  */
 class Response
 {
     public const HTTP_OK = 200;
@@ -45,7 +46,7 @@ class Response
     /**
      * @param string $data
      * @param int $status
-     * @param array $headers
+     * @param array<string, string> $headers
      */
     public function __construct(string $data, int $status = self::HTTP_OK, array $headers = [])
     {

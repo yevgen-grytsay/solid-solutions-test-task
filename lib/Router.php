@@ -2,10 +2,10 @@
 
 namespace Lib;
 
+use Lib\Router\HandlerException;
 use Lib\Router\RequestHandlerInterface;
 use Lib\Router\RequestPredicateBuilder;
 use Lib\Router\RequestPredicateInterface;
-use Lib\Router\RouterException;
 use Lib\Router\UnknownResourceException;
 use Throwable;
 
@@ -59,7 +59,7 @@ class Router
                 try {
                     return $handler->handle($request);
                 } catch (Throwable $e) {
-                    throw new RouterException($e);
+                    throw new HandlerException(sprintf('Handler failed: %s', (string) $handler), $e);
                 }
             }
         }

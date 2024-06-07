@@ -12,6 +12,8 @@ class FunctionRequestHandler implements RequestHandlerInterface
      */
     private $handler;
 
+    private string $name = '';
+
     public static function create(callable $handler): self
     {
         return new self($handler);
@@ -22,8 +24,23 @@ class FunctionRequestHandler implements RequestHandlerInterface
         $this->handler = $handler;
     }
 
+    public function withName(string $name): static
+    {
+        $obj = clone $this;
+        $obj->name = $name;
+
+        return $obj;
+    }
+
+    /** @psalm-suppress MixedInferredReturnType */
     public function handle(Request $request): Response
     {
+        /** @psalm-suppress MixedReturnStatement */
         return call_user_func($this->handler, $request);
+    }
+
+    public function __toString(): string
+    {
+        return $this->name !== '' ? $this->name : get_class($this);
     }
 }

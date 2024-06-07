@@ -2,10 +2,14 @@
 
 namespace Lib;
 
+/** @psalm-api  */
 class Request
 {
-    private array $get;
-    private array $post;
+
+    public readonly array $get;
+
+    public readonly array $post;
+
     private array $server;
 
     /**
