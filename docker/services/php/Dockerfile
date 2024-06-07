@@ -1,9 +1,10 @@
 FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
+    git \
     libzip-dev \
     libmcrypt-dev \
-    && docker-php-ext-install -j$(nproc) pdo_mysql \
+    && docker-php-ext-install -j$(nproc) pdo_mysql zip \
     && docker-php-ext-enable pdo_mysql
 
 RUN pecl install xdebug-3.3.2 \
