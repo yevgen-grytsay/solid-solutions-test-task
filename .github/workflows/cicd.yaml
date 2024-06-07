@@ -1,0 +1,26 @@
+name: Tree
+
+on:
+  push
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    container: php:8.2-cli
+    services:
+      composer:
+        image: composer:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Composer Install
+        uses: php-actions/composer@v6
+        with:
+          command: install
+          args: --no-interaction
+#          args: --no-interaction --ignore-platform-reqs
+
+      - name: Run Psalm
+        run: ./vendor/bin/psalm
