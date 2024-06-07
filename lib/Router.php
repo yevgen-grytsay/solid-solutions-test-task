@@ -11,9 +11,12 @@ use Throwable;
 
 class Router
 {
-    private array $routes;
+    /**
+     * @var array<int, array{predicate: RequestPredicateInterface, handler: RequestHandlerInterface}>
+     */
+    private array $routes = [];
 
-    public function get(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): self
+    public function get(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
     {
         $predicate = $pathOrPredicate instanceof RequestPredicateInterface
             ? RequestPredicateBuilder::from($pathOrPredicate)
@@ -29,7 +32,7 @@ class Router
         return $this;
     }
 
-    public function post(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): self
+    public function post(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
     {
         $predicate = $pathOrPredicate instanceof RequestPredicateInterface
             ? RequestPredicateBuilder::from($pathOrPredicate)

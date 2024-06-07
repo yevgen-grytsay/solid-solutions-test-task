@@ -6,7 +6,7 @@ use JetBrains\PhpStorm\Pure;
 
 class UnknownResourceException extends RouterException
 {
-    #[Pure] public function __construct(string $message = "Unknown resource")
+    public function __construct(string $message = "Unknown resource")
     {
         parent::__construct($message);
     }

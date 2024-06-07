@@ -22,7 +22,7 @@ class Request
 
     public function getPath(): string
     {
-        return rtrim($this->server['PATH_INFO'], '/');
+        return rtrim((string) $this->server['PATH_INFO'], '/');
     }
 
     public static function createFromGlobals(): self
@@ -32,6 +32,6 @@ class Request
 
     public function getMethod(): string
     {
-        return $this->server['REQUEST_METHOD'];
+        return (string) $this->server['REQUEST_METHOD'];
     }
 }

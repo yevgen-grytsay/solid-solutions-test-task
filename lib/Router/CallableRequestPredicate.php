@@ -6,6 +6,9 @@ use Lib\Request;
 
 class CallableRequestPredicate implements RequestPredicateInterface
 {
+    /**
+     * @var callable
+     */
     private $predicate;
 
     public function __construct(callable $predicate)

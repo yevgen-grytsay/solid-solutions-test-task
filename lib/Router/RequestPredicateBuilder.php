@@ -45,7 +45,7 @@ class RequestPredicateBuilder implements RequestPredicateInterface
         return $obj;
     }
 
-    public function withHttpMethod(string $method): self
+    public function withHttpMethod(string $method): static
     {
         $predicates = $this->predicates;
         $predicates[] = new CallableRequestPredicate(function (Request $request) use ($method) {

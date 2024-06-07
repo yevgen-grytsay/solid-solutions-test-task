@@ -7,7 +7,7 @@ use Throwable;
 
 class HandlerException extends RouterException
 {
-    #[Pure] public function __construct(string $message, Throwable $handlerError)
+    public function __construct(string $message, Throwable $handlerError)
     {
         parent::__construct($message, 0, $handlerError);
     }

@@ -9,12 +9,15 @@ class Response
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
 
     public readonly string $body;
+    /**
+     * @var array<string, string>
+     */
     public readonly array $headers;
     public readonly int $status;
 
     public static function json(array $data): self
     {
-        return new self(json_encode($data), 200, [
+        return new self(json_encode($data), self::HTTP_OK, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -31,7 +34,7 @@ class Response
      * @param int $status
      * @param array $headers
      */
-    public function __construct(string $data, int $status = 200, array $headers = [])
+    public function __construct(string $data, int $status = self::HTTP_OK, array $headers = [])
     {
         $this->body = $data;
         $this->headers = $headers;

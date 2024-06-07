@@ -19,13 +19,14 @@ class ErrorRenderer
                 'error' => [
                     'message' => $e->getMessage(),
                 ],
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            ], $e->httpCode);
         }
 
-        /*if ($e instanceof HttpException) {
-            return new HttpResponse("Router error", HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }*/
-
-        return new Response("Internal server error", Response::HTTP_INTERNAL_SERVER_ERROR);
+        return Response::jsonError([
+            'success' => false,
+            'error' => [
+                'message' => $e->getMessage(),
+            ],
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
