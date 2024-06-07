@@ -17,8 +17,8 @@ jobs:
 
       - name: Run Composer Install
         uses: php-actions/composer@v6
-        with:
-          command: install
+#        with:
+#          command: install
 #          args: --no-interaction
 #          args: --no-interaction --ignore-platform-reqs
 
