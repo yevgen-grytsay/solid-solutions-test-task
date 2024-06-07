@@ -15,12 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Composer Install
-        uses: php-actions/composer@v6
-#        with:
-#          command: install
-#          args: --no-interaction
-#          args: --no-interaction --ignore-platform-reqs
+      - name: Setup PHP with intl
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install dependencies
+        run: |
+          composer install --no-progress --prefer-dist --optimize-autoloader
+          composer run-script post-install-cmd
 
       - name: Run Psalm
         run: ./vendor/bin/psalm
