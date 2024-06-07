@@ -7,10 +7,10 @@ jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
-    container: php:8.2-cli
-    services:
-      composer:
-        image: composer:latest
+    # container: php:8.2-cli
+    # services:
+    #   composer:
+    #     image: composer:latest
 
     steps:
       - uses: actions/checkout@v4
