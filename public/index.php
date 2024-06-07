@@ -21,7 +21,7 @@ $router = (new Router())
                     ]
                 ],
             ],
-        ]);
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }))
     ->post('/create', FunctionRequestHandler::create(function (Request $request) {
         throw new \Lib\HttpException('Method "create" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -39,6 +39,8 @@ try {
     // var_dump($e);
     $response = (new ErrorRenderer())->render($e);
 }
+
+header(sprintf("HTTP/1.1 %d %s", $response->status, $response->getStatusText()));
 
 foreach ($response->headers as $name => $value) {
     header($name . ': ' . $value);

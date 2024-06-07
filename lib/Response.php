@@ -2,11 +2,24 @@
 
 namespace Lib;
 
+use LogicException;
+
 class Response
 {
     public const HTTP_OK = 200;
     public const HTTP_NOT_FOUND = 404;
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
+
+    /**
+     * @var array<int, string>
+     */
+    private static array $statusTexts = [
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        404 => 'Not Found',
+        500 => 'Internal Server Error',
+    ];
 
     public readonly string $body;
     /**
@@ -39,5 +52,14 @@ class Response
         $this->body = $data;
         $this->headers = $headers;
         $this->status = $status;
+    }
+
+    public function getStatusText(): string
+    {
+        if (!array_key_exists($this->status, static::$statusTexts)) {
+            throw new LogicException(sprintf("Status text for code %d not implemented", $this->status));
+        }
+
+        return static::$statusTexts[$this->status];
     }
 }
