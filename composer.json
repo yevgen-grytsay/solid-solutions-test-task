@@ -18,5 +18,8 @@
         "php": ">=8.2",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*"
+    },
+    "require-dev": {
+        "vimeo/psalm": "^5.24"
     }
 }
