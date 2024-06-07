@@ -19,7 +19,7 @@ jobs:
         uses: php-actions/composer@v6
         with:
           command: install
-          args: --no-interaction
+#          args: --no-interaction
 #          args: --no-interaction --ignore-platform-reqs
 
       - name: Run Psalm
