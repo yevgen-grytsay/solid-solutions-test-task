@@ -60,11 +60,16 @@ function mapTree2(nodeList, callback) {
         .filter(item => item !== null)
 }
 
-export const getAllNodes = () => {
-    return Promise.resolve({
-        success: true,
-        data: tree
-    })
+
+const _getAllNodes = () => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({
+                success: true,
+                data: tree
+            });
+        }, 1000);
+    });
 
     /*return fetch("/get-all")
         .then(resp => {
@@ -74,6 +79,31 @@ export const getAllNodes = () => {
             return new Error(`Can not get nodes: ${e.message}`)
         })*/
 }
+
+const _getAllNodesError = () => {
+    return new Promise((resolve, reject) => {
+        const handlerList = [
+            () => {
+                reject(new Error('Unknown error'));
+            },
+            () => {
+                resolve({
+                    success: false,
+                    error: {
+                        code: 115,
+                        message: 'Server not ready',
+                    }
+                });
+            }
+        ]
+        const index = Math.floor(Math.random() * handlerList.length)
+
+        setTimeout(handlerList[index], 1000);
+    });
+}
+
+const simulateError = false;
+export const getAllNodes = simulateError ? _getAllNodesError : _getAllNodes
 
 export const createNode = (parentId) => {
     autoIncrement++

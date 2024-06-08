@@ -14,6 +14,22 @@ class TreeComponent {
     init() {
         this.$treeContainer = $('<div class="tree-container"></div>')
             .appendTo(this.$container)
+
+        const $bus = $(this);
+
+        this.$container.on('click', '.item-add', (e) => {
+            const $el = $(e.target)
+            const id = $el.closest('.item').data('id')
+
+            $bus.trigger(TreeComponent.EVENT_ADD_NODE, [{id}])
+        })
+
+        this.$container.on('click', '.item-delete', (e) => {
+            const $el = $(e.target)
+            const id = $el.closest('.item').data('id')
+
+            $bus.trigger(TreeComponent.EVENT_DELETE_NODE, [{id}])
+        })
     }
 
     render() {
@@ -21,23 +37,6 @@ class TreeComponent {
         this.#createNodes([this.tree.root], $treeContainer)
         this.$treeContainer.replaceWith($treeContainer)
         this.$treeContainer = $treeContainer
-        // TODO unbind event listeners
-
-        const $bus = $(this);
-
-        this.$treeContainer.on('click', '.item-add', (e) => {
-            const $el = $(e.target)
-            const id = $el.closest('.item').data('id')
-
-            $bus.trigger(TreeComponent.EVENT_ADD_NODE, [{id}])
-        })
-
-        this.$treeContainer.on('click', '.item-delete', (e) => {
-            const $el = $(e.target)
-            const id = $el.closest('.item').data('id')
-
-            $bus.trigger(TreeComponent.EVENT_DELETE_NODE, [{id}])
-        })
     }
 
     setState(tree) {
