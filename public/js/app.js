@@ -45,18 +45,14 @@ const initApp = () => {
         return resp
     }
 
-    getAllNodes()
-        .then(filterApiResponse)
-        .then(onfulfilled)
-        .catch(notifyError)
-
-
     const refresh = () => {
         return getAllNodes()
             .then(filterApiResponse)
             .then(onfulfilled)
             .catch(notifyError)
     }
+
+    refresh()
 
     $(component).on(TreeComponent.EVENT_ADD_NODE, (e, {id}) => {
         blockUi()
