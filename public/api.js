@@ -29,11 +29,35 @@ let tree = {
     }
 };
 
-function mapTree(node, callback) {
-    return {
-        ...callback(node),
-        children: node.children.map(child => mapTree(child, callback))
+/*function mapTree(node, callback) {
+    const newNode = callback(node);
+    if (newNode === null) {
+        return null;
     }
+
+    return {
+        ...newNode,
+        children: node.children
+            .map(child => mapTree(child, callback))
+            .filter(item => item !== null)
+    }
+}*/
+
+function mapTree2(nodeList, callback) {
+
+    return nodeList
+        .map(node => {
+            const newNode = callback(node);
+            if (newNode === null) {
+                return null;
+            }
+
+            return {
+                ...newNode,
+                children: mapTree2(node.children, callback)
+            }
+        })
+        .filter(item => item !== null)
 }
 
 export const getAllNodes = () => {
@@ -55,19 +79,23 @@ export const createNode = (parentId) => {
     autoIncrement++
     const newId = autoIncrement;
 
+    const callback = node => {
+        if (node.id === parentId) {
+            node.children.push({
+                id: newId,
+                name: `Item ${newId}`,
+                children: []
+            })
+        }
+
+        return node
+    };
+
+    const nodeList = mapTree2([tree.root], callback)
+
     tree = {
         ...tree,
-        root: mapTree(tree.root, node => {
-            if (node.id === parentId) {
-                node.children.push({
-                    id: newId,
-                    name: `Item ${newId}`,
-                    children: []
-                })
-            }
-
-            return node
-        })
+        root: nodeList[0],
     }
 
     return Promise.resolve()
@@ -81,9 +109,35 @@ export const createNode = (parentId) => {
  * @return Promise
  */
 export const deleteNode = (id) => {
-    fetch(`/delete?id=${id}`, {
+    const callback = node => {
+        if (node.id === id) {
+            return null
+        }
+
+        return node
+    };
+
+
+    const nodeList = mapTree2([tree.root], callback)
+    if (nodeList.length === 0) {
+        return Promise.resolve({
+            success: false,
+            error: {
+                message: 'Can not delete root node',
+            }
+        })
+    }
+
+    tree = {
+        ...tree,
+        root: nodeList[0],
+    }
+
+    return Promise.resolve()
+
+    /*fetch(`/delete?id=${id}`, {
         method: 'POST',
-    })
+    })*/
 }
 
 export default {

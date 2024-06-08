@@ -1,6 +1,7 @@
-
+/* global $ */
 class TreeComponent {
-    static EVENT_ADD = 'add'
+    static EVENT_ADD_NODE = 'add-node'
+    static EVENT_DELETE_NODE = 'delete-node'
 
     $container;
     tree;
@@ -28,7 +29,14 @@ class TreeComponent {
             const $el = $(e.target)
             const id = $el.closest('.item').data('id')
 
-            $bus.trigger(TreeComponent.EVENT_ADD, [{id}])
+            $bus.trigger(TreeComponent.EVENT_ADD_NODE, [{id}])
+        })
+
+        this.$treeContainer.on('click', '.item-delete', (e) => {
+            const $el = $(e.target)
+            const id = $el.closest('.item').data('id')
+
+            $bus.trigger(TreeComponent.EVENT_DELETE_NODE, [{id}])
         })
     }
 
