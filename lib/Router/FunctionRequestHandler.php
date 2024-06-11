@@ -2,8 +2,8 @@
 
 namespace Lib\Router;
 
-use Lib\Request;
-use Lib\Response;
+use Lib\RequestInterface;
+use Lib\ResponseInterface;
 
 class FunctionRequestHandler implements RequestHandlerInterface
 {
@@ -33,7 +33,7 @@ class FunctionRequestHandler implements RequestHandlerInterface
     }
 
     /** @psalm-suppress MixedInferredReturnType */
-    public function handle(Request $request): Response
+    public function handle(RequestInterface $request): ResponseInterface
     {
         /** @psalm-suppress MixedReturnStatement */
         return call_user_func($this->handler, $request);

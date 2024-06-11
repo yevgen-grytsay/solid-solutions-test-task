@@ -48,7 +48,7 @@ class Router
         return $this;
     }
 
-    public function dispatch(Request $request): Response
+    public function dispatch(Request $request): ResponseInterface
     {
         foreach ($this->routes as $item) {
             /** @var RequestHandlerInterface $handler */

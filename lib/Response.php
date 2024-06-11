@@ -5,7 +5,7 @@ namespace Lib;
 use LogicException;
 
 /** @psalm-api  */
-class Response
+class Response implements ResponseInterface
 {
     public const HTTP_OK = 200;
     public const HTTP_NOT_FOUND = 404;
@@ -62,5 +62,20 @@ class Response
         }
 
         return static::$statusTexts[$this->status];
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function render(): string
+    {
+        return $this->body;
     }
 }

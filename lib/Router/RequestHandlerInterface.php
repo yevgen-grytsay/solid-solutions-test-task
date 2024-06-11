@@ -2,11 +2,11 @@
 
 namespace Lib\Router;
 
-use Lib\Request;
-use Lib\Response;
+use Lib\RequestInterface;
+use Lib\ResponseInterface;
 use Stringable;
 
 interface RequestHandlerInterface extends Stringable
 {
-    public function handle(Request $request): Response;
+    public function handle(RequestInterface $request): ResponseInterface;
 }

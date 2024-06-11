@@ -3,7 +3,7 @@
 namespace Lib;
 
 /** @psalm-api  */
-class Request
+class Request implements RequestInterface
 {
 
     public readonly array $get;
@@ -26,7 +26,7 @@ class Request
 
     public function getPath(): string
     {
-        return rtrim((string) $this->server['PATH_INFO'], '/');
+        return rtrim((string) ($this->server['PATH_INFO'] ?? '/'), '/');
     }
 
     public static function createFromGlobals(): self
