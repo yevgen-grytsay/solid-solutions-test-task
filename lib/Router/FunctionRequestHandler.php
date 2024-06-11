@@ -4,8 +4,9 @@ namespace Lib\Router;
 
 use Lib\RequestInterface;
 use Lib\ResponseInterface;
+use Stringable;
 
-class FunctionRequestHandler implements RequestHandlerInterface
+class FunctionRequestHandler implements RequestHandlerInterface, Stringable
 {
     /**
      * @var callable

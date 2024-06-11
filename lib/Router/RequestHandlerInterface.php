@@ -4,9 +4,8 @@ namespace Lib\Router;
 
 use Lib\RequestInterface;
 use Lib\ResponseInterface;
-use Stringable;
 
-interface RequestHandlerInterface extends Stringable
+interface RequestHandlerInterface
 {
     public function handle(RequestInterface $request): ResponseInterface;
 }

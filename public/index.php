@@ -25,28 +25,22 @@ $router = (new Router())
     ->get('/', new StaticHtmlRequestHandler(__DIR__ . '/../src/views/index.html'))
     ->get(
         '/get-all',
-        Router\ActionRequestHandler::fromAction(
-            new GetAllAction(
-                new TreeRepository($db),
-            )
+        new GetAllAction(
+            new TreeRepository($db),
         )
     )
     ->post(
         '/create',
-        Router\ActionRequestHandler::fromAction(
-            new CreateNodeAction(
-                new TreeRepository($db),
-                new TreeManager($db)
-            )
+        new CreateNodeAction(
+            new TreeRepository($db),
+            new TreeManager($db)
         )
     )
     ->post(
         '/delete',
-        Router\ActionRequestHandler::fromAction(
-            new DeleteNodeAction(
-                new TreeRepository($db),
-                new TreeManager($db)
-            )
+        new DeleteNodeAction(
+            new TreeRepository($db),
+            new TreeManager($db)
         )
     )
     ->tap(new NotFoundHandler())

@@ -15,11 +15,6 @@ class StaticHtmlRequestHandler implements RequestHandlerInterface
         $this->pathToFile = $pathToFile;
     }
 
-    public function __toString(): string
-    {
-        return __CLASS__;
-    }
-
     public function handle(RequestInterface $request): ResponseInterface
     {
         return Response::html(file_get_contents($this->pathToFile));

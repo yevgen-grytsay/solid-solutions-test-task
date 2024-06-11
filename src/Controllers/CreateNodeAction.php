@@ -5,13 +5,13 @@ namespace App\Controllers;
 use App\Entities\Node;
 use App\Managers\TreeManager;
 use App\Repositories\TreeRepository;
-use Lib\ActionInterface;
 use Lib\RequestInterface;
 use Lib\Response;
 use Lib\ResponseInterface;
+use Lib\Router\RequestHandlerInterface;
 use Lib\Utils\Reflection;
 
-class CreateNodeAction implements ActionInterface
+class CreateNodeAction implements RequestHandlerInterface
 {
     private TreeRepository $treeRepository;
     private TreeManager $treeManager;
@@ -22,7 +22,7 @@ class CreateNodeAction implements ActionInterface
         $this->treeManager = $treeManager;
     }
 
-    public function index(RequestInterface $request): ResponseInterface
+    public function handle(RequestInterface $request): ResponseInterface
     {
         $parentId = (int) $request->getQueryParams()['parent_id'];
 

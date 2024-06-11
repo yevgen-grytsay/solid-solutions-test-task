@@ -3,13 +3,13 @@
 namespace App\Controllers;
 
 use App\Repositories\TreeRepository;
-use Lib\ActionInterface;
 use Lib\DefaultJsonRenderer;
 use Lib\RequestInterface;
 use Lib\Response;
 use Lib\ResponseInterface;
+use Lib\Router\RequestHandlerInterface;
 
-class GetAllAction implements ActionInterface
+class GetAllAction implements RequestHandlerInterface
 {
     private TreeRepository $treeRepository;
 
@@ -18,7 +18,7 @@ class GetAllAction implements ActionInterface
         $this->treeRepository = $treeRepository;
     }
 
-    public function index(RequestInterface $request): ResponseInterface
+    public function handle(RequestInterface $request): ResponseInterface
     {
         $tree = $this->treeRepository->getTree();
 

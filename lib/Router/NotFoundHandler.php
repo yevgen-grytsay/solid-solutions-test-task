@@ -8,11 +8,6 @@ use Lib\ResponseInterface;
 
 class NotFoundHandler implements RequestHandlerInterface
 {
-    public function __toString(): string
-    {
-        return __CLASS__;
-    }
-
     public function handle(RequestInterface $request): ResponseInterface
     {
         if ($request->isJson()) {

@@ -4,12 +4,12 @@ namespace App\Controllers;
 
 use App\Managers\TreeManager;
 use App\Repositories\TreeRepository;
-use Lib\ActionInterface;
 use Lib\RequestInterface;
 use Lib\Response;
 use Lib\ResponseInterface;
+use Lib\Router\RequestHandlerInterface;
 
-class DeleteNodeAction implements ActionInterface
+class DeleteNodeAction implements RequestHandlerInterface
 {
     private TreeRepository $treeRepository;
     private TreeManager $treeManager;
@@ -20,7 +20,7 @@ class DeleteNodeAction implements ActionInterface
         $this->treeManager = $treeManager;
     }
 
-    public function index(RequestInterface $request): ResponseInterface
+    public function handle(RequestInterface $request): ResponseInterface
     {
         $nodeId = (int) $request->getQueryParams()['id'];
 
