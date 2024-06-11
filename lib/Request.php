@@ -26,7 +26,12 @@ class Request implements RequestInterface
 
     public function getPath(): string
     {
-        return rtrim((string) ($this->server['PATH_INFO'] ?? '/'), '/');
+        $path = (string) ($this->server['PATH_INFO'] ?? null);
+        if ('' === $path) {
+            return '/';
+        }
+
+        return rtrim($path, '/');
     }
 
     public static function createFromGlobals(): self

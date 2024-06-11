@@ -70,7 +70,7 @@ class Router
                 try {
                     return $handler->handle($request);
                 } catch (Throwable $e) {
-                    throw new HandlerException(sprintf('Handler failed: %s', (string) $handler), $e);
+                    throw new HandlerException(sprintf('Handler failed: %s. Error: %s', $handler, $e->getMessage()), $e);
                 }
             }
         }

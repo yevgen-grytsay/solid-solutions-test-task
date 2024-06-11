@@ -10,6 +10,7 @@ use Lib\ErrorRenderer;
 use Lib\Request;
 use Lib\Router;
 use Lib\Router\NotFoundHandler;
+use Lib\Router\StaticHtmlRequestHandler;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -21,6 +22,7 @@ $db = new MySqlConnection((function (): PDO {
 })());
 
 $router = (new Router())
+    ->get('/', new StaticHtmlRequestHandler(__DIR__ . '/../src/views/index.html'))
     ->get(
         '/get-all',
         Router\ActionRequestHandler::fromAction(
