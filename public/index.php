@@ -1,5 +1,8 @@
 <?php
 
+use App\Controllers\GetAllAction;
+use App\Repositories\NodeRepository;
+use Lib\Db\Connection;
 use Lib\ErrorRenderer;
 use Lib\Request;
 use Lib\Response;
@@ -8,24 +11,19 @@ use Lib\Router\FunctionRequestHandler;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+$db = new Connection((function (): PDO {
+    $pdo = new PDO("mysql:host=mysql;dbname=app;charset=utf8mb4", 'uapp', 'uapp123');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    return $pdo;
+})());
+
 $router = (new Router())
     ->get(
         '/get-all',
-        FunctionRequestHandler::create(function (Request $request) {
-            return Response::jsonError([
-                'success' => true,
-                'data' => [
-                    'tree' => [
-                        'root' => [
-                            'id' => 1,
-                            'name' => 'Content Root method=' . $request->getMethod(),
-                            'children' => [],
-                        ]
-                    ],
-                ],
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        })
-            ->withName('get-all-handler')
+        Router\ActionRequestHandler::fromAction(
+            new GetAllAction(new NodeRepository($db))
+        )
     )
     ->post(
         '/create',

@@ -62,22 +62,24 @@ function mapTree2(nodeList, callback) {
 
 
 const _getAllNodes = () => {
-    return new Promise((resolve) => {
+    /*return new Promise((resolve) => {
         setTimeout(() => {
             resolve({
                 success: true,
-                data: tree
+                data: {
+                    tree: tree,
+                }
             });
         }, 1000);
-    });
+    });*/
 
-    /*return fetch("/get-all")
+    return fetch("/get-all")
         .then(resp => {
             return resp.json()
         })
         .catch(e => {
             return new Error(`Can not get nodes: ${e.message}`)
-        })*/
+        })
 }
 
 const _getAllNodesError = () => {

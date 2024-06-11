@@ -33,7 +33,7 @@ const initApp = () => {
     component.init()
 
     const onfulfilled = resp => {
-        component.setState(resp.data)
+        component.setState(resp.data.tree)
         component.render()
     };
 
