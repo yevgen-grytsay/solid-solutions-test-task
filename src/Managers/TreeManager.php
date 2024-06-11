@@ -4,16 +4,13 @@ namespace App\Managers;
 
 use App\Entities\Tree;
 use App\Repositories\TreeRepository;
-use Lib\Db\Connection;
+use Lib\Db\ConnectionInterface;
 
 class TreeManager
 {
-    private Connection $db;
+    private ConnectionInterface $db;
 
-    /**
-     * @param Connection $db
-     */
-    public function __construct(Connection $db)
+    public function __construct(ConnectionInterface $db)
     {
         $this->db = $db;
     }
@@ -22,12 +19,12 @@ class TreeManager
     {
         $deletedIdList = $tree->popDeletedIds();
         foreach ($deletedIdList as $id) {
-            $this->db->deleteById(TreeRepository::TABLE_NAME, $id);
+            $this->db->delete(TreeRepository::TABLE_NAME, $id);
         }
 
         $created = $tree->popCreated();
         foreach ($created as $node) {
-            $id = (int) $this->db->insert(TreeRepository::TABLE_NAME, [
+            $id = $this->db->insert(TreeRepository::TABLE_NAME, [
                 'name' => $node->name,
                 'parent_id' => $node->parent_id,
             ]);

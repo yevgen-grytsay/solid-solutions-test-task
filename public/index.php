@@ -5,16 +5,14 @@ use App\Controllers\DeleteNodeAction;
 use App\Controllers\GetAllAction;
 use App\Managers\TreeManager;
 use App\Repositories\TreeRepository;
-use Lib\Db\Connection;
+use Lib\Db\MySqlConnection;
 use Lib\ErrorRenderer;
 use Lib\Request;
-use Lib\Response;
 use Lib\Router;
-use Lib\Router\FunctionRequestHandler;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$db = new Connection((function (): PDO {
+$db = new MySqlConnection((function (): PDO {
     $pdo = new PDO("mysql:host=mysql;dbname=app;charset=utf8mb4", 'uapp', 'uapp123');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
