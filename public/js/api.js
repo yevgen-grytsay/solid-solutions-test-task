@@ -141,7 +141,7 @@ export const createNode = (parentId) => {
  * @return Promise
  */
 export const deleteNode = (id) => {
-    const callback = node => {
+    /*const callback = node => {
         if (node.id === id) {
             return null
         }
@@ -165,11 +165,11 @@ export const deleteNode = (id) => {
         root: nodeList[0],
     }
 
-    return Promise.resolve()
+    return Promise.resolve()*/
 
-    /*fetch(`/delete?id=${id}`, {
+    return fetch(`/delete?id=${id}`, {
         method: 'POST',
-    })*/
+    })
 }
 
 export default {

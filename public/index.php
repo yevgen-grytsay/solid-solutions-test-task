@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\CreateNodeAction;
+use App\Controllers\DeleteNodeAction;
 use App\Controllers\GetAllAction;
 use App\Managers\TreeManager;
 use App\Repositories\TreeRepository;
@@ -40,10 +41,12 @@ $router = (new Router())
     )
     ->post(
         '/delete',
-        FunctionRequestHandler::create(function (Request $request) {
-            throw new \Lib\HttpException('Method "delete" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        })
-            ->withName('delete-handler')
+        Router\ActionRequestHandler::fromAction(
+            new DeleteNodeAction(
+                new TreeRepository($db),
+                new TreeManager($db)
+            )
+        )
     )
 ;
 

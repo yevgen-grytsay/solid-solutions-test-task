@@ -93,4 +93,28 @@ class Tree2 implements JsonSerializable
             'root' => $rootNode,
         ];
     }
+
+    public function deleteNodeById(int $nodeId): void
+    {
+        $queue = [
+            Reflection::populatePublicFields(new Node(), $this->getProtoNodeById($nodeId))
+        ];
+        $parentIndex = Arr::groupBy($this->nodeIndex, 'parent_id');
+
+        while ($queue !== []) {
+            $current = array_shift($queue);
+            $this->deleted[] = $current;
+
+            $children = $parentIndex[$current->id] ?? [];
+            $childNodes = array_map(function (array $row) {
+                $node = new Node();
+
+                return Reflection::populatePublicFields($node, $row);
+            }, $children);
+            $queue = [
+                ...$queue,
+                ...$childNodes,
+            ];
+        }
+    }
 }

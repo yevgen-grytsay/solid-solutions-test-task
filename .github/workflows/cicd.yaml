@@ -25,5 +25,8 @@ jobs:
           composer install --no-progress --prefer-dist --optimize-autoloader
           # composer run-script post-install-cmd
 
-      - name: Run Psalm
-        run: ./vendor/bin/psalm
+      - name: Run tests
+        run: ./vendor/bin/phpunit ./tests/
+
+#      - name: Run Psalm
+#        run: ./vendor/bin/psalm

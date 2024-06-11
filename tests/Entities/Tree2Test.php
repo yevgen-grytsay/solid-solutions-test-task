@@ -7,6 +7,8 @@ use App\Entities\Tree2;
 use Lib\Utils\Reflection;
 use PHPUnit\Framework\TestCase;
 
+use function PHPUnit\Framework\assertEquals;
+
 class Tree2Test extends TestCase
 {
     public function testJsonSerialize()
@@ -76,9 +78,69 @@ class Tree2Test extends TestCase
             ],
         ]);
 
-        $this->assertEquals(
+        assertEquals(
             $actual['root'],
             $expected
         );
+    }
+
+    public function testDeleteNodeById()
+    {
+        $nodes = [
+            [
+                'id' => '1',
+                'name' => 'Root',
+                'parent_id' => '0',
+            ],
+            [
+                'id' => '2',
+                'name' => 'Node #2',
+                'parent_id' => '1',
+            ],
+            [
+                'id' => '3',
+                'name' => 'Node #3',
+                'parent_id' => '2',
+            ],
+            [
+                'id' => '4',
+                'name' => 'Node #4',
+                'parent_id' => '2',
+            ],
+            [
+                'id' => '5',
+                'name' => 'Node #5',
+                'parent_id' => '4',
+            ],
+        ];
+
+        $tree = new Tree2($nodes);
+
+        $tree->deleteNodeById(2);
+
+        $actual = $tree->popDeleted();
+        $expected = [
+            Reflection::populatePublicFields(new Node(), [
+                'id' => '2',
+                'name' => 'Node #2',
+                'parent_id' => '1',
+            ]),
+            Reflection::populatePublicFields(new Node(), [
+                'id' => '3',
+                'name' => 'Node #3',
+                'parent_id' => '2',
+            ]),
+            Reflection::populatePublicFields(new Node(), [
+                'id' => '4',
+                'name' => 'Node #4',
+                'parent_id' => '2',
+            ]),
+            Reflection::populatePublicFields(new Node(), [
+                'id' => '5',
+                'name' => 'Node #5',
+                'parent_id' => '4',
+            ]),
+        ];
+        assertEquals($expected, $actual);
     }
 }
