@@ -34,6 +34,8 @@ class MySqlConnection implements ConnectionInterface
 
     public function insert(string $table, array $data): int
     {
+        unset($data['id']);
+
         $columnStr = implode(', ', array_keys($data));
         $valuesStr = implode(', ', array_fill(0, count($data), '?'));
 
@@ -43,9 +45,9 @@ class MySqlConnection implements ConnectionInterface
         return $this->pdo->lastInsertId();
     }
 
-    public function update(string $table, int $id, array $data)
+    public function update(string $table, int $id, array $data): void
     {
-        unset($data[$id]);
+        unset($data['id']);
 
         $params = array_combine(
             array_map(fn(string $k) => ":{$k}", $data),
