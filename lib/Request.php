@@ -44,4 +44,8 @@ class Request implements RequestInterface
         // parse_str($this->server['QUERY_STRING'] ?? '', $result);
         return $this->get;
     }
+    public function isJson(): bool
+    {
+        return 'application/json' === ($this->server['HTTP_CONTENT_TYPE'] ?? '');
+    }
 }

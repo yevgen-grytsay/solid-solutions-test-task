@@ -2,6 +2,7 @@
 
 namespace Lib;
 
+use Lib\Router\CallableRequestPredicate;
 use Lib\Router\HandlerException;
 use Lib\Router\RequestHandlerInterface;
 use Lib\Router\RequestPredicateBuilder;
@@ -15,6 +16,16 @@ class Router
      * @var array<int, array{predicate: RequestPredicateInterface, handler: RequestHandlerInterface}>
      */
     private array $routes = [];
+
+    public function tap(RequestHandlerInterface $handler): static
+    {
+        $this->routes[] = [
+            'predicate' => new CallableRequestPredicate(fn() => true),
+            'handler' => $handler,
+        ];
+
+        return $this;
+    }
 
     public function get(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
     {

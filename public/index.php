@@ -9,6 +9,7 @@ use Lib\Db\MySqlConnection;
 use Lib\ErrorRenderer;
 use Lib\Request;
 use Lib\Router;
+use Lib\Router\NotFoundHandler;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -46,6 +47,7 @@ $router = (new Router())
             )
         )
     )
+    ->tap(new NotFoundHandler())
 ;
 
 

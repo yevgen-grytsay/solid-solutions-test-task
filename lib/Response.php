@@ -36,6 +36,13 @@ class Response implements ResponseInterface
         ]);
     }
 
+    public static function html(string $html, int $httpCode = self::HTTP_OK): self
+    {
+        return new self($html, $httpCode, [
+            'Content-Type' => 'text/html',
+        ]);
+    }
+
     public static function jsonError(array $data, int $httpCode): self
     {
         return new self(json_encode($data), $httpCode, [

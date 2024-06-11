@@ -9,4 +9,6 @@ interface RequestInterface
     public function getMethod(): string;
 
     public function getQueryParams(): array;
+
+    public function isJson(): bool;
 }

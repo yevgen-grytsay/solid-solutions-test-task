@@ -4,7 +4,7 @@ namespace Lib\Db;
 
 interface ConnectionInterface
 {
-    public function all(string $table);
+    public function all(string $table): array;
 
     public function get(string $table, int $id): ?array;
 
