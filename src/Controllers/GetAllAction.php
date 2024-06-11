@@ -27,7 +27,7 @@ class GetAllAction implements ActionInterface
                 'success' => true,
                 'data' => [
                     'tree' => [
-                        'root' => $tree,
+                        'root' => $tree->getRoot(),
                     ],
                 ],
             ]),

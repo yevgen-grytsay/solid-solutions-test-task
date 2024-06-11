@@ -13,6 +13,13 @@ class Node
      */
     public array $children = [];
 
+    public static function createFromArray(array $data)
+    {
+        $nodes = self::createChildren([$data]);
+
+        return $nodes[0];
+    }
+
     public static function createFromJson(string $json): Node
     {
         $root = json_decode($json, true);

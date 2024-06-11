@@ -6,18 +6,21 @@ create table tree_1 (
 );
 
 INSERT INTO tree_1 (id, json) VALUES (1, '{
-  "id": 1,
-  "name": "Node #1",
-  "children": [
-    {
-      "id": 2,
-      "name": "Node #2",
-      "children": []
-    },
-    {
-      "id": 3,
-      "name": "Node #3",
-      "children": []
-    }
-  ]
+  "auto_increment": 3,
+  "root": {
+    "id": 1,
+    "name": "Node #1",
+    "children": [
+      {
+        "id": 2,
+        "name": "Node #2",
+        "children": []
+      },
+      {
+        "id": 3,
+        "name": "Node #3",
+        "children": []
+      }
+    ]
+  }
 }');

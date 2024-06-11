@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Entities\Node;
+use App\Entities\Tree;
 use Lib\Db\Connection;
 
 class NodeRepository
@@ -14,10 +15,12 @@ class NodeRepository
         $this->connection = $connection;
     }
 
-    public function getTree(): Node
+    public function getTree(): Tree
     {
         $row = $this->connection->getById('tree_1', 1);
 
-        return Node::createFromJson($row['json']);
+        $data = json_decode($row['json'], true);
+
+        return new Tree($data['auto_increment'], Node::createFromArray($data['root']));
     }
 }
