@@ -38,7 +38,7 @@ class MySqlConnection implements ConnectionInterface
         $valuesStr = implode(', ', array_fill(0, count($data), '?'));
 
         $stmt = $this->pdo->prepare("INSERT INTO {$table} ({$columnStr}) VALUES ($valuesStr)");
-        $stmt->execute($data);
+        $stmt->execute(array_values($data));
 
         return $this->pdo->lastInsertId();
     }
