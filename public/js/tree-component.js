@@ -3,32 +3,34 @@ class TreeComponent {
     static EVENT_ADD_NODE = 'add-node'
     static EVENT_DELETE_NODE = 'delete-node'
 
-    $container;
-    tree;
-    $treeContainer;
+    $container
+    tree
+    $treeContainer
+
     constructor($container) {
         this.tree = null
-        this.$container = $container;
+        this.$container = $container
     }
 
     init() {
-        this.$treeContainer = $('<div class="tree-container"></div>')
-            .appendTo(this.$container)
+        this.$treeContainer = $('<div class="tree-container"></div>').appendTo(
+            this.$container
+        )
 
-        const $bus = $(this);
+        const $bus = $(this)
 
-        this.$container.on('click', '.item-add', (e) => {
+        this.$container.on('click', '.item-add', e => {
             const $el = $(e.target)
             const id = $el.closest('.item').data('id')
 
-            $bus.trigger(TreeComponent.EVENT_ADD_NODE, [{id}])
+            $bus.trigger(TreeComponent.EVENT_ADD_NODE, [{ id }])
         })
 
-        this.$container.on('click', '.item-delete', (e) => {
+        this.$container.on('click', '.item-delete', e => {
             const $el = $(e.target)
             const id = $el.closest('.item').data('id')
 
-            $bus.trigger(TreeComponent.EVENT_DELETE_NODE, [{id}])
+            $bus.trigger(TreeComponent.EVENT_DELETE_NODE, [{ id }])
         })
     }
 
@@ -45,12 +47,12 @@ class TreeComponent {
 
     #createNodes(nodesStateList, $container) {
         nodesStateList.forEach(child => {
-            const $controls = $(
-                '<span class="controls">' +
-                '   <button type="button" class="btn btn-light item-add">+</button>' +
-                '   <button type="button" class="btn btn-light item-delete">-</button>' +
-                '</span>'
-            )
+            const $controls = $(`
+                <span class="controls">
+                   <button type="button" class="btn btn-light item-add">+</button>
+                   <button type="button" class="btn btn-light item-delete">-</button>
+                </span>
+            `)
 
             const $item = $(`
                     <div class="item">
@@ -58,17 +60,14 @@ class TreeComponent {
                         <div class="children"></div>
                     </div>
                 `)
-            $item
-                .find('.text')
-                .text(child.name)
-                .append($controls)
+            $item.find('.text').text(child.name).append($controls)
 
             $item.data({
                 id: child.id,
             })
 
             if (child.children.length > 0) {
-                const $childrenContainer = $item.find('.children');
+                const $childrenContainer = $item.find('.children')
                 this.#createNodes(child.children, $childrenContainer)
             }
 

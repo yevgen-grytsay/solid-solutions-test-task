@@ -1,13 +1,12 @@
 /* global $, bootstrap */
-import {createNode, deleteNode, getAllNodes} from './api.js'
+import { createNode, deleteNode, getAllNodes } from './api.js'
 import TreeComponent from './tree-component.js'
 
-
 function unblockUi() {
-    $('#app').show();
+    $('#app').show()
 }
 function blockUi() {
-    $('#app').hide();
+    $('#app').hide()
 }
 
 /**
@@ -17,12 +16,8 @@ function notifyError(e) {
     const toastEl = document.getElementById('appToast')
     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastEl)
 
-    const message = typeof e === 'undefined'
-        ? 'Unknown error'
-        : e.message;
-    $(toastEl)
-        .find('.toast-body')
-        .text(message)
+    const message = typeof e === 'undefined' ? 'Unknown error' : e.message
+    $(toastEl).find('.toast-body').text(message)
 
     toastBootstrap.show()
 }
@@ -35,9 +30,9 @@ const initApp = () => {
     const onfulfilled = resp => {
         component.setState(resp.data.tree)
         component.render()
-    };
+    }
 
-    const filterApiResponse = (resp) => {
+    const filterApiResponse = resp => {
         if (false === resp.success) {
             throw new Error(resp.error.message)
         }
@@ -54,19 +49,15 @@ const initApp = () => {
 
     refresh()
 
-    $(component).on(TreeComponent.EVENT_ADD_NODE, (e, {id}) => {
+    $(component).on(TreeComponent.EVENT_ADD_NODE, (e, { id }) => {
         blockUi()
-        createNode(id)
-            .then(refresh)
-            .finally(unblockUi)
+        createNode(id).then(refresh).finally(unblockUi)
     })
 
-    $(component).on(TreeComponent.EVENT_DELETE_NODE, (e, {id}) => {
+    $(component).on(TreeComponent.EVENT_DELETE_NODE, (e, { id }) => {
         blockUi()
-        deleteNode(id)
-            .then(refresh)
-            .finally(unblockUi)
+        deleteNode(id).then(refresh).finally(unblockUi)
     })
 }
 
-$(document).ready(initApp);
+$(document).ready(initApp)

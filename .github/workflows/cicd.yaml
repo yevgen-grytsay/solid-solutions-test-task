@@ -1,7 +1,6 @@
 name: Tree
 
-on:
-  push
+on: push
 
 jobs:
   ci:
@@ -27,6 +26,5 @@ jobs:
 
       - name: Run tests
         run: ./vendor/bin/phpunit ./tests/
-
 #      - name: Run Psalm
 #        run: ./vendor/bin/psalm

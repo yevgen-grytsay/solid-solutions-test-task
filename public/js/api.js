@@ -1,4 +1,3 @@
-
 const _getAllNodes = () => {
     return fetch('/get-all')
         .then(resp => {
@@ -13,7 +12,7 @@ const _getAllNodesError = () => {
     return new Promise((resolve, reject) => {
         const handlerList = [
             () => {
-                reject(new Error('Unknown error'));
+                reject(new Error('Unknown error'))
             },
             () => {
                 resolve({
@@ -21,22 +20,22 @@ const _getAllNodesError = () => {
                     error: {
                         code: 115,
                         message: 'Server not ready',
-                    }
-                });
-            }
+                    },
+                })
+            },
         ]
         const index = Math.floor(Math.random() * handlerList.length)
 
-        setTimeout(handlerList[index], 1000);
-    });
+        setTimeout(handlerList[index], 1000)
+    })
 }
 
-const simulateError = false;
+const simulateError = false
 export const getAllNodes = simulateError ? _getAllNodesError : _getAllNodes
 
-export const createNode = (parentId) => {
+export const createNode = parentId => {
     return fetch(`/create?parent_id=${parentId}`, {
-        method: 'POST'
+        method: 'POST',
     })
 }
 
@@ -44,7 +43,7 @@ export const createNode = (parentId) => {
  * @param {Number} id
  * @return Promise
  */
-export const deleteNode = (id) => {
+export const deleteNode = id => {
     return fetch(`/delete?id=${id}`, {
         method: 'POST',
     })
