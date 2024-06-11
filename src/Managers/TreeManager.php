@@ -2,7 +2,7 @@
 
 namespace App\Managers;
 
-use App\Entities\Tree2;
+use App\Entities\Tree;
 use App\Repositories\TreeRepository;
 use Lib\Db\Connection;
 
@@ -18,11 +18,11 @@ class TreeManager
         $this->db = $db;
     }
 
-    public function save(Tree2 $tree): void
+    public function save(Tree $tree): void
     {
-        $deleted = $tree->popDeleted();
-        foreach ($deleted as $node) {
-            $this->db->deleteById(TreeRepository::TABLE_NAME, $node->id);
+        $deletedIdList = $tree->popDeletedIds();
+        foreach ($deletedIdList as $id) {
+            $this->db->deleteById(TreeRepository::TABLE_NAME, $id);
         }
 
         $created = $tree->popCreated();

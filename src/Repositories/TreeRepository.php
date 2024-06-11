@@ -2,12 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Entities\Tree2;
+use App\Entities\Tree;
 use Lib\Db\Connection;
 
 class TreeRepository
 {
-    public const TABLE_NAME = 'tree_2';
+    public const TABLE_NAME = 'tree';
 
     private Connection $connection;
 
@@ -16,10 +16,10 @@ class TreeRepository
         $this->connection = $connection;
     }
 
-    public function getTree(): Tree2
+    public function getTree(): Tree
     {
         $rows = $this->connection->select(self::TABLE_NAME);
 
-        return new Tree2($rows);
+        return new Tree($rows);
     }
 }
