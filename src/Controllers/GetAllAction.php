@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Repositories\NodeRepository;
+use App\Repositories\TreeRepository;
 use Lib\ActionInterface;
 use Lib\DefaultJsonRenderer;
 use Lib\RequestInterface;
@@ -11,24 +11,22 @@ use Lib\ResponseInterface;
 
 class GetAllAction implements ActionInterface
 {
-    private NodeRepository $nodeRepository;
+    private TreeRepository $treeRepository;
 
-    public function __construct(NodeRepository $nodeRepository)
+    public function __construct(TreeRepository $treeRepository)
     {
-        $this->nodeRepository = $nodeRepository;
+        $this->treeRepository = $treeRepository;
     }
 
     public function index(RequestInterface $request): ResponseInterface
     {
-        $tree = $this->nodeRepository->getTree();
+        $tree = $this->treeRepository->getTree();
 
         return new Response(
             (new DefaultJsonRenderer())->render([
                 'success' => true,
                 'data' => [
-                    'tree' => [
-                        'root' => $tree->getRoot(),
-                    ],
+                    'tree' => $tree,
                 ],
             ]),
             Response::HTTP_OK,

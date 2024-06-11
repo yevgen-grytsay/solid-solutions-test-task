@@ -38,4 +38,10 @@ class Request implements RequestInterface
     {
         return (string) $this->server['REQUEST_METHOD'];
     }
+
+    public function getQueryParams(): array
+    {
+        // parse_str($this->server['QUERY_STRING'] ?? '', $result);
+        return $this->get;
+    }
 }

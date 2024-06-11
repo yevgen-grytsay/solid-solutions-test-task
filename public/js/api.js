@@ -108,7 +108,7 @@ const simulateError = false;
 export const getAllNodes = simulateError ? _getAllNodesError : _getAllNodes
 
 export const createNode = (parentId) => {
-    autoIncrement++
+    /*autoIncrement++
     const newId = autoIncrement;
 
     const callback = node => {
@@ -130,10 +130,10 @@ export const createNode = (parentId) => {
         root: nodeList[0],
     }
 
-    return Promise.resolve()
-    /*fetch(`/create?parent_id=${parentId}`, {
+    return Promise.resolve()*/
+    return fetch(`/create?parent_id=${parentId}`, {
         method: 'POST'
-    })*/
+    })
 }
 
 /**

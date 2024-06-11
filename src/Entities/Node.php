@@ -12,6 +12,7 @@ class Node
      * @var Node[]
      */
     public array $children = [];
+    public int $parent_id;
 
     public static function createFromArray(array $data)
     {

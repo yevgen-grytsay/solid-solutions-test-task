@@ -1,7 +1,9 @@
 <?php
 
+use App\Controllers\CreateNodeAction;
 use App\Controllers\GetAllAction;
-use App\Repositories\NodeRepository;
+use App\Managers\TreeManager;
+use App\Repositories\TreeRepository;
 use Lib\Db\Connection;
 use Lib\ErrorRenderer;
 use Lib\Request;
@@ -22,15 +24,19 @@ $router = (new Router())
     ->get(
         '/get-all',
         Router\ActionRequestHandler::fromAction(
-            new GetAllAction(new NodeRepository($db))
+            new GetAllAction(
+                new TreeRepository($db),
+            )
         )
     )
     ->post(
         '/create',
-        FunctionRequestHandler::create(function (Request $request) {
-            throw new \Lib\HttpException('Method "create" not implemented, path=' . $request->getPath(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        })
-            ->withName('create-handler')
+        Router\ActionRequestHandler::fromAction(
+            new CreateNodeAction(
+                new TreeRepository($db),
+                new TreeManager($db)
+            )
+        )
     )
     ->post(
         '/delete',
