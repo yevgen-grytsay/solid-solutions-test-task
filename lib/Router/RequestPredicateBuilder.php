@@ -62,6 +62,19 @@ class RequestPredicateBuilder implements RequestPredicateInterface
         return $obj;
     }
 
+    public function withContentType(string $contentType): static
+    {
+        $predicates = $this->predicates;
+        $predicates[] = new CallableRequestPredicate(function (Request $request) use ($contentType) {
+            return $contentType === $request->getContentType();
+        });
+
+        $obj = clone $this;
+        $obj->predicates = $predicates;
+
+        return $obj;
+    }
+
     public function match(Request $request): bool
     {
         foreach ($this->predicates as $p) {

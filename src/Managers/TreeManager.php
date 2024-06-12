@@ -30,5 +30,10 @@ class TreeManager
             ]);
             $node->id = $id;
         }
+
+        $updated = $tree->popUpdated();
+        foreach ($updated as $node) {
+            $this->db->update(TreeRepository::TABLE_NAME, $node['id'], $node['data']);
+        }
     }
 }
