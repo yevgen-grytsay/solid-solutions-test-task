@@ -1,4 +1,6 @@
 /* global $ */
+import html from './html.js'
+
 class TreeComponent {
     static EVENT_ADD_NODE = 'add-node'
     static EVENT_DELETE_NODE = 'delete-node'
@@ -68,38 +70,33 @@ class TreeComponent {
         this.tree = tree
     }
 
-    #createNodes(nodesStateList, $container) {
-        nodesStateList.forEach(child => {
-            const $controls = $(`
-                <span class="controls">
-                   <button type="button" class="btn btn-light item-add">+</button>
-                   <button type="button" class="btn btn-light item-delete">-</button>
-                   <button type="button" class="btn btn-light item-edit">edit</button>
-                   <button type="button" class="btn btn-light item-save">save</button>
-                </span>
-            `)
+    #renderNode(child) {
+        return `
+            <div class="item" ${html.data({ id: child.id, child })}>
+                <p class="text">
+                    <span class="name">${html.e(child.name)}</span>
+                    <span ${html.attrs({ class: 'controls' })}>
+                       <button type="button" class="btn btn-light item-add">+</button>
+                       <button type="button" class="btn btn-light item-delete">-</button>
+                       <button type="button" class="btn btn-light item-edit">edit</button>
+                       <button type="button" class="btn btn-light item-save">save</button>
+                    </span>
+                </p>
+                <div class="children">
+                    ${html.map(child.children, child => {
+                        return this.#renderNode(child)
+                    })}
+                </div>
+            </div>
+        `
+    }
 
-            const $item = $(`
-                    <div class="item">
-                        <p class="text"><span class="name"></span></p>
-<!--                        <div class="name-input"><input type="text"></div>-->
-                        <div class="children"></div>
-                    </div>
-                `)
-            $item.find('.text').append($controls)
-            $item.find('.text .name').text(child.name)
-
-            $item.data({
-                id: child.id,
-            })
-
-            if (child.children.length > 0) {
-                const $childrenContainer = $item.find('.children')
-                this.#createNodes(child.children, $childrenContainer)
-            }
-
-            $container.append($item)
+    #createNodes(nodesStateList, $treeContainer) {
+        const parts = nodesStateList.map(child => {
+            return this.#renderNode(child)
         })
+        const $el = $(parts.join('\n'))
+        $treeContainer.append($el)
     }
 }
 
