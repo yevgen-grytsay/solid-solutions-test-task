@@ -15,13 +15,13 @@ class NotFoundHandler implements RequestHandlerInterface
                 'success' => false,
                 'error' => [
                     'message' => 'Resource not found',
-                ]
+                ],
             ]);
         }
 
         return Response::html(
             '<h1>Resource not found</h1>',
-            Response::HTTP_NOT_FOUND,
+            Response::HTTP_NOT_FOUND
         );
     }
 }

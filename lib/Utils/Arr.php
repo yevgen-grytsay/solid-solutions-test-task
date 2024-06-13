@@ -4,8 +4,10 @@ namespace Lib\Utils;
 
 class Arr
 {
-    public static function groupBy(array $array, callable|string $indexFncOrField): array
-    {
+    public static function groupBy(
+        array $array,
+        callable|string $indexFncOrField
+    ): array {
         $result = [];
         foreach ($array as $k => $v) {
             $key = self::get($v, $indexFncOrField);
@@ -17,13 +19,15 @@ class Arr
 
         return $result;
     }
-    public static function indexBy(array $array, callable|string $indexFncOrField): array
-    {
+    public static function indexBy(
+        array $array,
+        callable|string $indexFncOrField
+    ): array {
         if (is_string($indexFncOrField)) {
             // $indexFnc = fn($item) => self::get($item, $indexFncOrField);
-            $indexFnc = function($item) use ($indexFncOrField) {
+            $indexFnc = function ($item) use ($indexFncOrField) {
                 return self::get($item, $indexFncOrField);
-            } ;
+            };
         } else {
             $indexFnc = $indexFncOrField;
         }
@@ -32,8 +36,11 @@ class Arr
         return array_combine($keyList, $array);
     }
 
-    public static function get(array|object $value, string|int|callable $key, $default = null)
-    {
+    public static function get(
+        array|object $value,
+        string|int|callable $key,
+        $default = null
+    ) {
         if (!is_callable($key)) {
             $keyFnc = function (array|object $value) use ($default, $key) {
                 if (is_object($value)) {
@@ -49,8 +56,11 @@ class Arr
         return $keyFnc($value);
     }
 
-    public static function findOne(array $array, callable $predicate, $default = null)
-    {
+    public static function findOne(
+        array $array,
+        callable $predicate,
+        $default = null
+    ) {
         foreach ($array as $key => $value) {
             if (true === $predicate($value, $key)) {
                 return $value;

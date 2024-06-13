@@ -39,7 +39,9 @@ class RequestPredicateBuilder implements RequestPredicateInterface
     public function withPath(string $path): self
     {
         $predicates = $this->predicates;
-        $predicates[] = new CallableRequestPredicate(function (Request $request) use ($path) {
+        $predicates[] = new CallableRequestPredicate(function (
+            Request $request
+        ) use ($path) {
             return $path === $request->getPath();
         });
 
@@ -52,7 +54,9 @@ class RequestPredicateBuilder implements RequestPredicateInterface
     public function withHttpMethod(string $method): static
     {
         $predicates = $this->predicates;
-        $predicates[] = new CallableRequestPredicate(function (Request $request) use ($method) {
+        $predicates[] = new CallableRequestPredicate(function (
+            Request $request
+        ) use ($method) {
             return strtolower($method) === strtolower($request->getMethod());
         });
 
@@ -65,7 +69,9 @@ class RequestPredicateBuilder implements RequestPredicateInterface
     public function withContentType(string $contentType): static
     {
         $predicates = $this->predicates;
-        $predicates[] = new CallableRequestPredicate(function (Request $request) use ($contentType) {
+        $predicates[] = new CallableRequestPredicate(function (
+            Request $request
+        ) use ($contentType) {
             return $contentType === $request->getContentType();
         });
 

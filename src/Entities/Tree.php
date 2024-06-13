@@ -74,7 +74,7 @@ class Tree implements JsonSerializable
     public function jsonSerialize(): array
     {
         $root = Arr::findOne($this->nodeIndex, function (array $node) {
-            $isOk = ((int)$node['parent_id']) === 0;
+            $isOk = ((int) $node['parent_id']) === 0;
 
             return $isOk;
         });
@@ -95,10 +95,7 @@ class Tree implements JsonSerializable
                 return $node;
             }, $nodesProto);
             $current->children = $childNodes;
-            $queue = [
-                ...$queue,
-                ...$childNodes,
-            ];
+            $queue = [...$queue, ...$childNodes];
         }
 
         return [
@@ -108,9 +105,7 @@ class Tree implements JsonSerializable
 
     public function deleteNodeById(int $nodeId): void
     {
-        $queue = [
-            $this->getProtoNodeById($nodeId)
-        ];
+        $queue = [$this->getProtoNodeById($nodeId)];
         $parentIndex = Arr::groupBy($this->nodeIndex, 'parent_id');
 
         while ($queue !== []) {
@@ -118,10 +113,7 @@ class Tree implements JsonSerializable
             $this->deleted[] = $current['id'];
 
             $children = $parentIndex[$current['id']] ?? [];
-            $queue = [
-                ...$queue,
-                ...$children,
-            ];
+            $queue = [...$queue, ...$children];
         }
     }
 

@@ -16,8 +16,10 @@ class CreateNodeAction implements RequestHandlerInterface
     private TreeRepository $treeRepository;
     private TreeManager $treeManager;
 
-    public function __construct(TreeRepository $treeRepository, TreeManager $treeManager)
-    {
+    public function __construct(
+        TreeRepository $treeRepository,
+        TreeManager $treeManager
+    ) {
         $this->treeRepository = $treeRepository;
         $this->treeManager = $treeManager;
     }
@@ -30,7 +32,9 @@ class CreateNodeAction implements RequestHandlerInterface
 
         $tree->appendChild(
             $parentId,
-            Reflection::populatePublicFields(new Node(), ['name' => 'Node ' . md5(random_bytes(100))])
+            Reflection::populatePublicFields(new Node(), [
+                'name' => 'Node ' . substr(md5(random_bytes(100)), 0, 10),
+            ])
         );
 
         $this->treeManager->save($tree);

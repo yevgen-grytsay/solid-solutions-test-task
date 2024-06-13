@@ -5,7 +5,6 @@ namespace Lib;
 /** @psalm-api  */
 class Request implements RequestInterface
 {
-
     public readonly array $get;
 
     public readonly array $post;
@@ -51,7 +50,8 @@ class Request implements RequestInterface
     }
     public function isJson(): bool
     {
-        return 'application/json' === ($this->server['HTTP_CONTENT_TYPE'] ?? '');
+        return 'application/json' ===
+            ($this->server['HTTP_CONTENT_TYPE'] ?? '');
     }
 
     public function getContent(): string

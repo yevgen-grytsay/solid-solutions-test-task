@@ -7,7 +7,9 @@ use RuntimeException;
 class DefaultJsonRenderer implements JsonRendererInterface
 {
     private int $flags;
-    public function __construct(int $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) {
+    public function __construct(
+        int $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    ) {
         $this->flags = $flags;
     }
 

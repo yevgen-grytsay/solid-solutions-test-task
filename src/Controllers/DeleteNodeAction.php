@@ -14,8 +14,10 @@ class DeleteNodeAction implements RequestHandlerInterface
     private TreeRepository $treeRepository;
     private TreeManager $treeManager;
 
-    public function __construct(TreeRepository $treeRepository, TreeManager $treeManager)
-    {
+    public function __construct(
+        TreeRepository $treeRepository,
+        TreeManager $treeManager
+    ) {
         $this->treeRepository = $treeRepository;
         $this->treeManager = $treeManager;
     }

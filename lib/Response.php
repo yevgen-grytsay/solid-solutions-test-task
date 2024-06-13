@@ -36,8 +36,10 @@ class Response implements ResponseInterface
         ]);
     }
 
-    public static function html(string $html, int $httpCode = self::HTTP_OK): self
-    {
+    public static function html(
+        string $html,
+        int $httpCode = self::HTTP_OK
+    ): self {
         return new self($html, $httpCode, [
             'Content-Type' => 'text/html',
         ]);
@@ -55,8 +57,11 @@ class Response implements ResponseInterface
      * @param int $status
      * @param array<string, string> $headers
      */
-    public function __construct(string $data, int $status = self::HTTP_OK, array $headers = [])
-    {
+    public function __construct(
+        string $data,
+        int $status = self::HTTP_OK,
+        array $headers = []
+    ) {
         $this->body = $data;
         $this->headers = $headers;
         $this->status = $status;
@@ -65,7 +70,12 @@ class Response implements ResponseInterface
     public function getStatusText(): string
     {
         if (!array_key_exists($this->status, static::$statusTexts)) {
-            throw new LogicException(sprintf("Status text for code %d not implemented", $this->status));
+            throw new LogicException(
+                sprintf(
+                    'Status text for code %d not implemented',
+                    $this->status
+                )
+            );
         }
 
         return static::$statusTexts[$this->status];

@@ -33,7 +33,11 @@ class TreeManager
 
         $updated = $tree->popUpdated();
         foreach ($updated as $node) {
-            $this->db->update(TreeRepository::TABLE_NAME, $node['id'], $node['data']);
+            $this->db->update(
+                TreeRepository::TABLE_NAME,
+                $node['id'],
+                $node['data']
+            );
         }
     }
 }

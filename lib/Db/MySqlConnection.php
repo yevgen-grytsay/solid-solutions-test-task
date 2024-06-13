@@ -26,7 +26,7 @@ class MySqlConnection implements ConnectionInterface
     {
         $stmt = $this->pdo->prepare("SELECT * FROM {$table} WHERE id = :id");
         $stmt->execute([
-            ":id" => $id,
+            ':id' => $id,
         ]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -39,7 +39,9 @@ class MySqlConnection implements ConnectionInterface
         $columnStr = implode(', ', array_keys($data));
         $valuesStr = implode(', ', array_fill(0, count($data), '?'));
 
-        $stmt = $this->pdo->prepare("INSERT INTO {$table} ({$columnStr}) VALUES ($valuesStr)");
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO {$table} ({$columnStr}) VALUES ($valuesStr)"
+        );
         $stmt->execute(array_values($data));
 
         return $this->pdo->lastInsertId();
@@ -51,23 +53,22 @@ class MySqlConnection implements ConnectionInterface
 
         $params = array_combine(
             array_map(fn(string $k) => ":{$k}", array_keys($data)),
-            $data,
+            $data
         );
 
         $parts = array_map(fn(string $k) => "`$k` = :{$k}", array_keys($data));
         $partsStr = implode(', ', $parts);
-        $stmt = $this->pdo->prepare("UPDATE {$table} SET {$partsStr} WHERE id = :id");
-        $stmt->execute([
-            ...$params,
-            ':id' => $id,
-        ]);
+        $stmt = $this->pdo->prepare(
+            "UPDATE {$table} SET {$partsStr} WHERE id = :id"
+        );
+        $stmt->execute([...$params, ':id' => $id]);
     }
 
     public function delete(string $table, int $id): void
     {
         $stmt = $this->pdo->prepare("DELETE FROM {$table} WHERE id = :id");
         $stmt->execute([
-            ":id" => $id,
+            ':id' => $id,
         ]);
     }
 

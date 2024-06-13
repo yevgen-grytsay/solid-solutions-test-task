@@ -78,10 +78,7 @@ class TreeTest extends TestCase
             ],
         ]);
 
-        assertEquals(
-            $actual['root'],
-            $expected
-        );
+        assertEquals($actual['root'], $expected);
     }
 
     public function testDeleteNodeById()

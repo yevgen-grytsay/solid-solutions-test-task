@@ -10,7 +10,9 @@ class Reflection
     public static function getPublicFields(string|object $class): array
     {
         $reflectionClass = new ReflectionClass($class);
-        $properties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
+        $properties = $reflectionClass->getProperties(
+            ReflectionProperty::IS_PUBLIC
+        );
 
         $publicProperties = [];
         foreach ($properties as $property) {
@@ -27,8 +29,10 @@ class Reflection
      * @param array $params
      * @return T
      */
-    public static function populatePublicFields(object $object, array $params): object
-    {
+    public static function populatePublicFields(
+        object $object,
+        array $params
+    ): object {
         $fields = self::getPublicFields($object);
         $values = array_intersect_key($params, array_flip($fields));
         foreach ($values as $key => $value) {
