@@ -26,6 +26,14 @@ class TreeComponent {
 
         const $bus = $(this)
 
+        this.$container.on('node:name:change', '.node-row', e => {
+            console.log({ detail: e.detail })
+
+            $bus.trigger(TreeComponent.EVENT_UPDATE_NODE, [
+                { id: e.detail.id, name: e.detail.name },
+            ])
+        })
+
         this.$container.on('click', '.item-add', e => {
             const id = $(e.target).data('node_id')
 
@@ -82,13 +90,8 @@ class TreeComponent {
                     ${assign('node', child)}
                 >
                     <p class="text">
-                        <span class="name">${html.e(child.name)}</span>
-                        <span ${html.attrs({ class: 'controls' })}>
-                           <button type="button" class="btn btn-light item-add" ${assign('node_id', child.id)}>+</button>
-                           <button type="button" class="btn btn-light item-delete" ${assign('node_id', child.id)}>-</button>
-                           <button type="button" class="btn btn-light item-edit" ${assign('node_id', child.id)}>edit</button>
-                           <button type="button" class="btn btn-light item-save" ${assign('node_id', child.id)}>save</button>
-                        </span>
+                        <editable-node class="node-row" node_id="${child.id}" node_name="${child.name}"></editable-node>
+                        
                     </p>
                     <div class="children">
                         ${html.map(child.children, child => {
@@ -108,5 +111,85 @@ class TreeComponent {
         return $(parts.join('\n'))
     }
 }
+
+class EditableNode extends HTMLElement {
+    static observedAttributes = ['node_id', 'node_name']
+
+    style
+
+    constructor() {
+        super()
+    }
+    // Element functionality written in here
+
+    connectedCallback() {
+        this.style = document.createElement('style')
+        this.append(this.style)
+
+        // this.modeReadOnly()
+
+        const $el = $(`
+            <div>
+                <div>
+                    <div class="name-container"><span class="name"></span></div>
+                    <div class="input-container"><input name="node_name" class="form-control" type="text"></div>
+                </div>
+                <div class="btn-group">
+                   <button type="button" class="btn btn-light btn-sm item-add">+</button>
+                   <button type="button" class="btn btn-light btn-sm item-delete">-</button>
+                   <button type="button" class="btn btn-light btn-sm item-edit">edit</button>
+                   <button type="button" class="btn btn-light btn-sm item-cancel">cancel</button>
+                   <button type="button" class="btn btn-light btn-sm item-save">save</button>
+                </div>
+            </div>
+        `)
+
+        this.append($el.get(0))
+
+        $(this)
+            .find('.name-container .name')
+            .text(this.getAttribute('node_name'))
+
+        $(this).on('change', '[name="node_name"]', e => {
+            this.dispatchEvent(
+                new CustomEvent('node:name:change', {
+                    bubbles: true,
+                    detail: {
+                        id: this.getAttribute('node_id'),
+                        name: $(e.target).val(),
+                    },
+                })
+            )
+        })
+
+        $(this).on('click', '.item-edit', e => {
+            this.modeEdit()
+        })
+    }
+
+    modeEdit() {
+        const style = document.createElement('style')
+        style.innerHTML = `
+            [node_id="${this.getAttribute('node_id')}"] .name-container { display: none; }
+            [node_id="${this.getAttribute('node_id')}"] .input-container { display: block; }
+        `
+        this.style = style
+        const el = this.querySelector('style')
+        el.replaceWith(style)
+    }
+
+    modeReadOnly() {
+        const style = document.createElement('style')
+        style.innerHTML = `
+            [node_id="${this.getAttribute('node_id')}"] .name-container { display: block; }
+            [node_id="${this.getAttribute('node_id')}"] .input-container { display: none; }
+        `
+        this.style = style
+        const el = this.querySelector('style')
+        el.replaceWith(style)
+    }
+}
+
+customElements.define('editable-node', EditableNode)
 
 export default TreeComponent

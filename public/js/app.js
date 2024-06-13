@@ -66,3 +66,52 @@ const initApp = () => {
 }
 
 $(document).ready(initApp)
+
+$($ => {
+    const data = {
+        root: {
+            id: 1,
+            name: 'root node',
+            children: [
+                {
+                    id: 2,
+                    name: 'node #2',
+                    children: [],
+                },
+                {
+                    id: 3,
+                    name: 'node #3',
+                    children: [
+                        {
+                            id: 4,
+                            name: 'node #4',
+                            children: [],
+                        },
+                        {
+                            id: 5,
+                            name: 'node #5',
+                            children: [],
+                        },
+                    ],
+                },
+            ],
+        },
+    }
+
+    const h = {
+        $if(valueOrFunction, a, b) {},
+    }
+
+    const template = `
+        <div>
+            <p data-$if="${ctx => (ctx.name.length > 0 ? ':name="ctx.name"' : '')}"></p>
+        </div>
+    `
+
+    function render(template, ctx) {}
+
+    const ctx = data.root
+    render(template, ctx)
+
+    console.log(template)
+})
