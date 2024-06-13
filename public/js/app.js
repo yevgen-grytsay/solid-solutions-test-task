@@ -16,6 +16,8 @@ function notifyError(e) {
     const toastEl = document.getElementById('appToast')
     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastEl)
 
+    console.error(e)
+
     const message = typeof e === 'undefined' ? 'Unknown error' : e.message
     $(toastEl).find('.toast-body').text(message)
 
