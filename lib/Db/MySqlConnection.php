@@ -50,11 +50,11 @@ class MySqlConnection implements ConnectionInterface
         unset($data['id']);
 
         $params = array_combine(
-            array_map(fn(string $k) => ":{$k}", $data),
+            array_map(fn(string $k) => ":{$k}", array_keys($data)),
             $data,
         );
 
-        $parts = array_map(fn(string $k) => "$k = :{$k}", array_keys($data));
+        $parts = array_map(fn(string $k) => "`$k` = :{$k}", array_keys($data));
         $partsStr = implode(', ', $parts);
         $stmt = $this->pdo->prepare("UPDATE {$table} SET {$partsStr} WHERE id = :id");
         $stmt->execute([
