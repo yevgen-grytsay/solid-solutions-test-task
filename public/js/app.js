@@ -31,7 +31,7 @@ const initApp = () => {
 
     const onfulfilled = resp => {
         component.setState(resp.data.tree)
-        component.render()
+        // component.render()
     }
 
     const filterApiResponse = resp => {

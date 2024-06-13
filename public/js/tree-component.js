@@ -18,7 +18,7 @@ class TreeComponent {
             tree: {},
             nodes: {},
         })
-        this.state = this.store.state
+        // this.state = this.store.state
         this.$container = $container
     }
 
@@ -32,6 +32,10 @@ class TreeComponent {
             .on('click', '.item-delete', this.onNodeDelete.bind(this))
             .on('click', '.item-edit', this.onNodeEdit.bind(this))
             .on('click', '.item-save', this.onNodeSave.bind(this))
+
+        this.listen('tree', tree => {
+            this.#render()
+        })
     }
 
     onNodeSave(e) {
@@ -40,7 +44,7 @@ class TreeComponent {
         const id = $el.closest('.item').data('nodeId')
         const newName = item.find('.main:first [name="node_name"]').val()
 
-        this.store.update('nodes', nodes => {
+        this.store.set('nodes', nodes => {
             nodes[id].isEditable = false
         })
 
@@ -51,7 +55,7 @@ class TreeComponent {
         const $el = $(e.target)
         const id = $el.closest('.item').data('nodeId')
 
-        this.store.update('nodes', nodes => {
+        this.store.set('nodes', nodes => {
             nodes[id].isEditable = true
         })
     }
@@ -82,9 +86,9 @@ class TreeComponent {
         this.store.listen(prop, listener)
     }
 
-    render() {
+    #render() {
         const $treeContainer = $('<div class="tree-container"></div>')
-        this.#createNodes([this.tree.root], $treeContainer)
+        this.#createNodes([this.store.tree.root], $treeContainer)
         this.$treeContainer.replaceWith($treeContainer)
         this.$treeContainer = $treeContainer
     }
@@ -95,30 +99,32 @@ class TreeComponent {
             isOpen: false,
         }
 
-        this.tree = tree
+        const nodes = mapNodesToObject(tree.root, node => {
+            const nodeState =
+                typeof this.store.nodes[node.id] === 'undefined'
+                    ? nodeDefaults
+                    : {
+                          isEditable: this.store.nodes[node.id].isEditable,
+                          isOpen: this.store.nodes[node.id].isOpen,
+                      }
 
-        const nodes = Object.fromEntries(
-            mapEachNode(tree.root, node => {
-                const nodeState =
-                    typeof this.state.nodes[node.id] === 'undefined'
-                        ? nodeDefaults
-                        : {
-                              isEditable: this.state.nodes[node.id].isEditable,
-                              isOpen: this.state.nodes[node.id].isOpen,
-                          }
+            return [
+                node.id,
+                {
+                    ...node,
+                    ...nodeState,
+                },
+            ]
+        })
 
-                return [
-                    node.id,
-                    {
-                        ...node,
-                        ...nodeState,
-                    },
-                ]
-            })
-        )
-
-        this.store.set({
-            // tree: tree,
+        this.store.update({
+            tree: {},
+            nodes: {},
+        })
+        this.store.update({
+            tree: tree,
+        })
+        this.store.update({
             nodes: nodes,
         })
     }
@@ -146,39 +152,47 @@ class TreeComponent {
                     </div>
                 `)
             const $main = $item.find('.main')
-            $item.find('.main .name').text(node.name)
+            // $item.find('.main .name').text(node.name)
 
             $item.attr('data-node-id', node.id)
 
-            this.listen(`nodes.${node.id}.name`, name => {
-                $main.find('.name').text(name)
-                $main.find('[name="node_name"]').val(name)
-            })
+            const onChange = {
+                name: name => {
+                    $main.find('.name').text(name)
+                    $main.find('[name="node_name"]').val(name)
+                },
+                isOpen: isOpen => {
+                    const $container = $main.find(
+                        `[data-node-id="${node.id}"] .children:first`
+                    )
 
-            this.listen(`nodes.${node.id}.isOpen`, isOpen => {
-                const $container = $main.find(
-                    `[data-node-id="${node.id}"] .children:first`
+                    isOpen ? $container.show() : $container.hide()
+                },
+                isEditable: isEditable => {
+                    const $editGroup = $main.find(
+                        '.input-name, .item-cancel, .item-save'
+                    )
+                    const $defaultGroup = $main.find('.name, .item-edit')
+                    if (isEditable) {
+                        $main
+                            .find('[name="node_name"]')
+                            .val(this.store.nodes[node.id].name)
+                        $editGroup.show()
+                        $defaultGroup.hide()
+                    } else {
+                        $editGroup.hide()
+                        $defaultGroup.show()
+                    }
+                },
+            }
+
+            this.store
+                .listen(`nodes.${node.id}.name`, onChange.name.bind(this))
+                .listen(`nodes.${node.id}.isOpen`, onChange.isOpen.bind(this))
+                .listen(
+                    `nodes.${node.id}.isEditable`,
+                    onChange.isEditable.bind(this)
                 )
-
-                isOpen ? $container.show() : $container.hide()
-            })
-
-            this.listen(`nodes.${node.id}.isEditable`, isEditable => {
-                const $editGroup = $main.find(
-                    '.input-name, .item-cancel, .item-save'
-                )
-                const $defaultGroup = $main.find('.name, .item-edit')
-                if (isEditable) {
-                    $main
-                        .find('[name="node_name"]')
-                        .val(this.state.nodes[node.id].name)
-                    $editGroup.show()
-                    $defaultGroup.hide()
-                } else {
-                    $editGroup.hide()
-                    $defaultGroup.show()
-                }
-            })
 
             if (node.children.length > 0) {
                 const $childrenContainer = $item.find('.children')
@@ -190,7 +204,7 @@ class TreeComponent {
     }
 }
 
-function mapEachNode(root, callback) {
+function mapNodesToObject(root, callback) {
     const queue = [root]
     const entries = []
     while (queue.length > 0) {
@@ -199,7 +213,7 @@ function mapEachNode(root, callback) {
         item.children.forEach(c => queue.push(c))
     }
 
-    return new Map(entries)
+    return Object.fromEntries(new Map(entries))
 }
 
 export default TreeComponent
