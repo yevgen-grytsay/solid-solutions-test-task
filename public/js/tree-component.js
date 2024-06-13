@@ -11,12 +11,13 @@ class TreeComponent {
     $treeContainer
     /** @type {Store} */
     store
-    state
+    // state
 
     constructor($container) {
         this.store = createStore({
             tree: {},
             nodes: {},
+            editableNodeId: 0,
         })
         // this.state = this.store.state
         this.$container = $container
@@ -34,6 +35,7 @@ class TreeComponent {
             .on('click', '.item-save', this.onNodeSave.bind(this))
             .on('click', '.item-open', this.onNodeOpen.bind(this))
             .on('click', '.item-close', this.onNodeClose.bind(this))
+            .on('click', '.item-cancel', this.onNodeEditCancel.bind(this))
 
         this.listen('tree', tree => {
             this.#render()
@@ -62,8 +64,8 @@ class TreeComponent {
         const id = $el.closest('.item').data('nodeId')
         const newName = item.find('.main:first [name="node_name"]').val()
 
-        this.store.set('nodes', nodes => {
-            nodes[id].isEditable = false
+        this.store.update({
+            editableNodeId: 0,
         })
 
         this.trigger(TreeComponent.EVENT_UPDATE_NODE, [{ id, name: newName }])
@@ -73,8 +75,14 @@ class TreeComponent {
         const $el = $(e.target)
         const id = $el.closest('.item').data('nodeId')
 
-        this.store.set('nodes', nodes => {
-            nodes[id].isEditable = true
+        this.store.update({
+            editableNodeId: id,
+        })
+    }
+
+    onNodeEditCancel(e) {
+        this.store.update({
+            editableNodeId: 0,
         })
     }
 
@@ -113,7 +121,6 @@ class TreeComponent {
 
     setState(tree) {
         const nodeDefaults = {
-            isEditable: false,
             isOpen: true,
         }
 
@@ -122,7 +129,6 @@ class TreeComponent {
                 typeof this.store.nodes[node.id] === 'undefined'
                     ? nodeDefaults
                     : {
-                          isEditable: this.store.nodes[node.id].isEditable,
                           isOpen: this.store.nodes[node.id].isOpen,
                       }
 
@@ -136,22 +142,12 @@ class TreeComponent {
         })
 
         this.store.update({
-            tree: {},
-            nodes: {},
-        })
-        this.store.update({
             tree: tree,
-        })
-        this.store.update({
             nodes: nodes,
         })
     }
 
     #createNodes(nodesStateList, $container) {
-        const decode = (condition, ifTrue, ifFalse = '') => {
-            return condition ? ifTrue : ifFalse
-        }
-
         nodesStateList.forEach(node => {
             const $item = $(`
                 <div class="item">
@@ -167,24 +163,25 @@ class TreeComponent {
                                <button type="button" class="btn btn-light item-save">save</button>
                             </span>
                         </div>
-                        ${decode(
-                            node.children.length > 0,
-                            `<div class="children-controls">
+                        ${
+                            node.children.length > 0
+                                ? `<div class="children-controls">
                                         <span>
-                                            <button type="button" class="btn btn-light item-open">open</button>
+                                            <button type="button" class="btn btn-light item-open"></button>
                                             <button type="button" class="btn btn-light item-close">close</button>
                                         </span>
                                     </div>`
-                        )}
+                                : ''
+                        }
                         
                     </div>
                     <div class="children"></div>
                 </div>
             `)
             const $main = $item.find('.main')
-            // $item.find('.main .name').text(node.name)
 
             $item.attr('data-node-id', node.id)
+            $main.find('.item-open').text(`open (${node.children.length})`)
 
             const onChange = {
                 name: name => {
@@ -192,9 +189,7 @@ class TreeComponent {
                     $main.find('[name="node_name"]').val(name)
                 },
                 isOpen: isOpen => {
-                    const $container = $main
-                        .closest('.item')
-                        .find('.children:first')
+                    const $container = $item.find('.children:first')
                     const $openBtn = $main.find('.item-open')
                     const $closeBtn = $main.find('.item-close')
 
@@ -208,12 +203,13 @@ class TreeComponent {
                         $openBtn.show()
                     }
                 },
-                isEditable: isEditable => {
+                editableNodeId: editableNodeId => {
                     const $editGroup = $main.find(
                         '.input-name, .item-cancel, .item-save'
                     )
                     const $defaultGroup = $main.find('.name, .item-edit')
-                    if (isEditable) {
+
+                    if (editableNodeId === node.id) {
                         $main
                             .find('[name="node_name"]')
                             .val(this.store.nodes[node.id].name)
@@ -227,12 +223,12 @@ class TreeComponent {
             }
 
             this.store
-                .listen(`nodes.${node.id}.name`, onChange.name.bind(this))
-                .listen(`nodes.${node.id}.isOpen`, onChange.isOpen.bind(this))
-                .listen(
-                    `nodes.${node.id}.isEditable`,
-                    onChange.isEditable.bind(this)
-                )
+                .startGroup()
+                .listen(`nodes.${node.id}.name`, onChange.name)
+                .listen(`nodes.${node.id}.isOpen`, onChange.isOpen)
+                .listen('editableNodeId', onChange.editableNodeId)
+                .popGroup()
+                .notify()
 
             if (node.children.length > 0) {
                 const $childrenContainer = $item.find('.children')

@@ -1,6 +1,8 @@
 class Store {
     #listeners = []
     #state
+    /** @type {Array|null} */
+    #group = null
 
     /**
      * @param {Object} data
@@ -22,23 +24,36 @@ class Store {
         })
     }
 
+    startGroup() {
+        this.#group = []
+
+        return this
+    }
+
+    popGroup() {
+        const group = this.#group
+        this.#group = null
+
+        return {
+            notify: () => {
+                group.forEach(({ prop, listener }) => {
+                    const value = getProp(prop, this.#state)
+                    listener(value, undefined, prop)
+                })
+            },
+        }
+    }
+
     /**
      * @param {Object} data
      */
     update(data) {
-        let newData = JSON.parse(JSON.stringify(data))
-        let oldData = Object.fromEntries(
-            new Map(
-                Object.keys(data).map(prop => {
-                    return [prop, this.#state[prop]]
-                })
-            )
-        )
-        Object.entries(newData).forEach(([prop, value]) => {
+        let oldData = JSON.parse(JSON.stringify(this.#state))
+        Object.entries(data).forEach(([prop, value]) => {
             this.#state[prop] = value
         })
 
-        this.#notify(Object.keys(newData), oldData, newData)
+        this.#notify(Object.keys(data), oldData, data)
     }
 
     /**
@@ -46,9 +61,7 @@ class Store {
      * @param {Function} callback
      */
     set(prop, callback) {
-        const oldState = {
-            [[prop]]: this.#state,
-        }
+        const oldState = JSON.parse(JSON.stringify(this.#state))
         const newData = JSON.parse(JSON.stringify(this.#state[prop]))
         callback(newData)
         this.#state[prop] = { ...newData }
@@ -62,51 +75,60 @@ class Store {
      * @return {Store}
      */
     listen(prop, listener) {
-        const callback = (p, newObject, oldObject) => {
-            const requiredParts = Array.isArray(prop) ? prop : prop.split('.')
-
-            let ctx = {
-                [[p]]: newObject,
-            }
-            let oldCx = {
-                [[p]]: oldObject,
-            }
-            while (requiredParts.length > 0) {
-                const part = requiredParts.shift()
-                if (typeof ctx[part] === 'undefined') {
-                    return false
-                }
-                ctx = ctx[part]
-
-                if (typeof oldCx !== 'undefined') {
-                    if (typeof oldCx[part] === 'undefined') {
-                        oldCx = undefined
-                    } else {
-                        oldCx = oldCx[part]
-                    }
-                }
-            }
-
-            // listener(ctx, prop, p, newObject)
-            if (ctx !== oldCx) {
-                listener(ctx, prop, p, newObject)
+        const callback = (p, newValue, oldValue) => {
+            if (newValue !== oldValue) {
+                listener(newValue, oldValue, prop)
             }
         }
 
-        this.#listeners.push(callback)
+        this.#listeners.push({
+            prop,
+            listener: callback,
+        })
+
+        if (this.#group !== null) {
+            this.#group.push({
+                prop,
+                listener,
+            })
+        }
 
         return this
     }
 
     #notify(changedProps, oldData, newData) {
-        Promise.resolve().then(() => {
-            this.#listeners.forEach(listener => {
-                changedProps.forEach(prop => {
-                    listener(prop, newData[prop], oldData[prop])
+        const onfulfilled = () => {
+            this.#listeners.forEach(({ prop, listener }) => {
+                changedProps.forEach(changedProp => {
+                    if (!prop.startsWith(changedProp)) {
+                        return
+                    }
+
+                    listener(
+                        prop,
+                        getProp(prop, newData),
+                        getProp(prop, oldData)
+                    )
                 })
             })
-        })
+        }
+        Promise.resolve().then(onfulfilled)
     }
+}
+
+function getProp(prop, object, defaultValue = undefined) {
+    const parts = Array.isArray(prop) ? prop : prop.split('.')
+
+    let value = object
+    while (parts.length > 0) {
+        const part = parts.shift()
+        if (typeof value[part] === 'undefined') {
+            return defaultValue
+        }
+        value = value[part]
+    }
+
+    return value
 }
 
 /**
