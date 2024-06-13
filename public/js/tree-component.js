@@ -11,7 +11,6 @@ class TreeComponent {
     $treeContainer
     /** @type {Store} */
     store
-    // state
 
     constructor($container) {
         this.store = createStore({
@@ -19,7 +18,6 @@ class TreeComponent {
             nodes: {},
             editableNodeId: 0,
         })
-        // this.state = this.store.state
         this.$container = $container
     }
 
@@ -37,7 +35,7 @@ class TreeComponent {
             .on('click', '.item-close', this.onNodeClose.bind(this))
             .on('click', '.item-cancel', this.onNodeEditCancel.bind(this))
 
-        this.listen('tree', tree => {
+        this.listen('tree', () => {
             this.#render()
         })
     }
@@ -80,7 +78,7 @@ class TreeComponent {
         })
     }
 
-    onNodeEditCancel(e) {
+    onNodeEditCancel() {
         this.store.update({
             editableNodeId: 0,
         })
@@ -124,26 +122,18 @@ class TreeComponent {
             isOpen: true,
         }
 
-        const nodes = mapNodesToObject(tree.root, node => {
-            const nodeState =
-                typeof this.store.nodes[node.id] === 'undefined'
-                    ? nodeDefaults
-                    : {
-                          isOpen: this.store.nodes[node.id].isOpen,
-                      }
-
-            return [
-                node.id,
-                {
+        const nodes = treeToArrayOfNodes(tree.root)
+            .map(node => {
+                return {
                     ...node,
-                    ...nodeState,
-                },
-            ]
-        })
+                    ...overwrite(nodeDefaults, this.store.nodes[node.id])
+                }
+            })
+        const nodesState = indexBy(nodes, 'id')
 
         this.store.update({
             tree: tree,
-            nodes: nodes,
+            nodes: nodesState,
         })
     }
 
@@ -240,14 +230,56 @@ class TreeComponent {
     }
 }
 
-function mapNodesToObject(root, callback) {
+function treeToArrayOfNodes(root) {
     const queue = [root]
-    const entries = []
+    const result = []
     while (queue.length > 0) {
-        const item = queue.shift()
-        entries.push(callback(item))
-        item.children.forEach(c => queue.push(c))
+        const node = queue.shift()
+        result.push(node)
+
+        node.children.forEach(child => {
+            queue.push(child)
+        })
     }
+
+    return result
+}
+
+/**
+ * @param {Object} obj
+ * @param {Object|undefined} other
+ * @returns {Object}
+ */
+function overwrite(obj, other) {
+    if (typeof other === 'undefined') {
+        return obj
+    }
+
+    const result = {...obj}
+    Object.keys(result).forEach(key => {
+        if (Object.prototype.hasOwnProperty.call(other, key)) {
+            result[key] = other[key]
+        }
+    })
+
+    return result
+}
+
+/**
+ * @param {Array} array
+ * @param {Function|string} indexer
+ */
+function indexBy(array, indexer) {
+    const indexFnc = typeof indexer === 'string'
+        ? (item) => item[indexer]
+        : indexer
+
+    const entries = array.map(item => {
+        return [
+            indexFnc(item),
+            item,
+        ]
+    })
 
     return Object.fromEntries(new Map(entries))
 }
