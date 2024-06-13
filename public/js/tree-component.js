@@ -32,9 +32,27 @@ class TreeComponent {
             .on('click', '.item-delete', this.onNodeDelete.bind(this))
             .on('click', '.item-edit', this.onNodeEdit.bind(this))
             .on('click', '.item-save', this.onNodeSave.bind(this))
+            .on('click', '.item-open', this.onNodeOpen.bind(this))
+            .on('click', '.item-close', this.onNodeClose.bind(this))
 
         this.listen('tree', tree => {
             this.#render()
+        })
+    }
+
+    onNodeOpen(e) {
+        const $el = $(e.target)
+        const id = $el.closest('.item').data('nodeId')
+        this.store.set('nodes', nodes => {
+            nodes[id].isOpen = true
+        })
+    }
+
+    onNodeClose(e) {
+        const $el = $(e.target)
+        const id = $el.closest('.item').data('nodeId')
+        this.store.set('nodes', nodes => {
+            nodes[id].isOpen = false
         })
     }
 
@@ -96,7 +114,7 @@ class TreeComponent {
     setState(tree) {
         const nodeDefaults = {
             isEditable: false,
-            isOpen: false,
+            isOpen: true,
         }
 
         const nodes = mapNodesToObject(tree.root, node => {
@@ -130,10 +148,15 @@ class TreeComponent {
     }
 
     #createNodes(nodesStateList, $container) {
+        const decode = (condition, ifTrue, ifFalse = '') => {
+            return condition ? ifTrue : ifFalse
+        }
+
         nodesStateList.forEach(node => {
             const $item = $(`
-                    <div class="item">
-                        <p class="main">
+                <div class="item">
+                    <div class="main">
+                        <div>
                             <span class="name"></span>
                             <span class="input-name"><input name="node_name" type="text"></span>
                             <span class="controls">
@@ -143,14 +166,21 @@ class TreeComponent {
                                <button type="button" class="btn btn-light item-cancel">cancel</button>
                                <button type="button" class="btn btn-light item-save">save</button>
                             </span>
-                        </p>
-                        <span>
-                            <button type="button" class="btn btn-light item-open">open</button>
-                            <button type="button" class="btn btn-light item-close">close</button>
-                        </span>
-                        <div class="children"></div>
+                        </div>
+                        ${decode(
+                            node.children.length > 0,
+                            `<div class="children-controls">
+                                        <span>
+                                            <button type="button" class="btn btn-light item-open">open</button>
+                                            <button type="button" class="btn btn-light item-close">close</button>
+                                        </span>
+                                    </div>`
+                        )}
+                        
                     </div>
-                `)
+                    <div class="children"></div>
+                </div>
+            `)
             const $main = $item.find('.main')
             // $item.find('.main .name').text(node.name)
 
@@ -162,11 +192,21 @@ class TreeComponent {
                     $main.find('[name="node_name"]').val(name)
                 },
                 isOpen: isOpen => {
-                    const $container = $main.find(
-                        `[data-node-id="${node.id}"] .children:first`
-                    )
+                    const $container = $main
+                        .closest('.item')
+                        .find('.children:first')
+                    const $openBtn = $main.find('.item-open')
+                    const $closeBtn = $main.find('.item-close')
 
-                    isOpen ? $container.show() : $container.hide()
+                    if (isOpen) {
+                        $container.show()
+                        $closeBtn.show()
+                        $openBtn.hide()
+                    } else {
+                        $container.hide()
+                        $closeBtn.hide()
+                        $openBtn.show()
+                    }
                 },
                 isEditable: isEditable => {
                     const $editGroup = $main.find(
