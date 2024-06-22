@@ -1,6 +1,6 @@
 /* global $ */
 
-import createStore from './store.js'
+import {makeObservable, makeObserver} from "./observable.js";
 
 class TreeComponent {
     static EVENT_ADD_NODE = 'add-node'
@@ -13,7 +13,7 @@ class TreeComponent {
     store
 
     constructor($container) {
-        this.store = createStore({
+        this.store = makeObservable({
             tree: {},
             nodes: {},
             editableNodeId: 0,
@@ -35,25 +35,19 @@ class TreeComponent {
             .on('click', '.item-close', this.onNodeClose.bind(this))
             .on('click', '.item-cancel', this.onNodeEditCancel.bind(this))
 
-        this.listen('tree', () => {
-            this.#render()
-        })
+        makeObserver(this.#render.bind(this))
     }
 
     onNodeOpen(e) {
         const $el = $(e.target)
         const id = $el.closest('.item').data('nodeId')
-        this.store.set('nodes', nodes => {
-            nodes[id].isOpen = true
-        })
+        this.store.nodes[id].isOpen = true
     }
 
     onNodeClose(e) {
         const $el = $(e.target)
         const id = $el.closest('.item').data('nodeId')
-        this.store.set('nodes', nodes => {
-            nodes[id].isOpen = false
-        })
+        this.store.nodes[id].isOpen = false
     }
 
     onNodeSave(e) {
@@ -62,9 +56,7 @@ class TreeComponent {
         const id = $el.closest('.item').data('nodeId')
         const newName = item.find('.main:first [name="node_name"]').val()
 
-        this.store.update({
-            editableNodeId: 0,
-        })
+        this.store.editableNodeId = 0
 
         this.trigger(TreeComponent.EVENT_UPDATE_NODE, [{ id, name: newName }])
     }
@@ -73,15 +65,11 @@ class TreeComponent {
         const $el = $(e.target)
         const id = $el.closest('.item').data('nodeId')
 
-        this.store.update({
-            editableNodeId: id,
-        })
+        this.store.editableNodeId = id
     }
 
     onNodeEditCancel() {
-        this.store.update({
-            editableNodeId: 0,
-        })
+        this.store.editableNodeId = 0
     }
 
     onNodeDelete(e) {
@@ -106,11 +94,15 @@ class TreeComponent {
      * @param {Array|String} prop
      * @param {Function} listener
      */
-    listen(prop, listener) {
+    /*listen(prop, listener) {
         this.store.listen(prop, listener)
-    }
+    }*/
 
     #render() {
+        if (!this.store.tree.root) {
+            return
+        }
+
         const $treeContainer = $('<div class="tree-container"></div>')
         this.#createNodes([this.store.tree.root], $treeContainer)
         this.$treeContainer.replaceWith($treeContainer)
@@ -131,14 +123,13 @@ class TreeComponent {
             })
         const nodesState = indexBy(nodes, 'id')
 
-        this.store.update({
-            tree: tree,
-            nodes: nodesState,
-        })
+        this.store.tree = tree
+        this.store.nodes = nodesState
     }
 
     #createNodes(nodesStateList, $container) {
-        nodesStateList.forEach(node => {
+        nodesStateList.forEach(({ id }) => {
+            const node = this.store.nodes[id]
             const $item = $(`
                 <div class="item">
                     <div class="main">
@@ -169,56 +160,65 @@ class TreeComponent {
                 </div>
             `)
             const $main = $item.find('.main')
+            const store = this.store
 
             $item.attr('data-node-id', node.id)
             $main.find('.item-open').text(`open (${node.children.length})`)
 
-            const onChange = {
-                name: name => {
-                    $main.find('.name').text(name)
-                    $main.find('[name="node_name"]').val(name)
-                },
-                isOpen: isOpen => {
-                    const $container = $item.find('.children:first')
-                    const $openBtn = $main.find('.item-open')
-                    const $closeBtn = $main.find('.item-close')
+            makeObserver(() => {
+                $main.find('.name').text(node.name)
+                $main.find('[name="node_name"]').val(node.name)
 
-                    if (isOpen) {
-                        $container.show()
-                        $closeBtn.show()
-                        $openBtn.hide()
-                    } else {
-                        $container.hide()
-                        $closeBtn.hide()
-                        $openBtn.show()
-                    }
-                },
-                editableNodeId: editableNodeId => {
-                    const $editGroup = $main.find(
-                        '.input-name, .item-cancel, .item-save'
-                    )
-                    const $defaultGroup = $main.find('.name, .item-edit')
+                const update = {
+                    name() {
+                        $main.find('.name').text(node.name)
+                        $main.find('[name="node_name"]').val(node.name)
 
-                    if (editableNodeId === node.id) {
-                        $main
-                            .find('[name="node_name"]')
-                            .val(this.store.nodes[node.id].name)
-                        $editGroup.show()
-                        $defaultGroup.hide()
-                    } else {
-                        $editGroup.hide()
-                        $defaultGroup.show()
-                    }
-                },
-            }
+                        return this
+                    },
+                    isOpen() {
+                        const $container = $item.find('.children:first')
+                        const $openBtn = $main.find('.item-open')
+                        const $closeBtn = $main.find('.item-close')
 
-            this.store
-                .startGroup()
-                .listen(`nodes.${node.id}.name`, onChange.name)
-                .listen(`nodes.${node.id}.isOpen`, onChange.isOpen)
-                .listen('editableNodeId', onChange.editableNodeId)
-                .popGroup()
-                .notify()
+                        if (node.isOpen) {
+                            $container.show()
+                            $closeBtn.show()
+                            $openBtn.hide()
+                        } else {
+                            $container.hide()
+                            $closeBtn.hide()
+                            $openBtn.show()
+                        }
+
+                        return this
+                    },
+                    editableNodeId() {
+                        const $editGroup = $main.find(
+                            '.input-name, .item-cancel, .item-save'
+                        )
+                        const $defaultGroup = $main.find('.name, .item-edit')
+
+                        if (store.editableNodeId === node.id) {
+                            $main
+                                .find('[name="node_name"]')
+                                .val(node.name)
+                            $editGroup.show()
+                            $defaultGroup.hide()
+                        } else {
+                            $editGroup.hide()
+                            $defaultGroup.show()
+                        }
+
+                        return this
+                    },
+                }
+
+                update
+                    .name()
+                    .isOpen()
+                    .editableNodeId()
+            })
 
             if (node.children.length > 0) {
                 const $childrenContainer = $item.find('.children')
