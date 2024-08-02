@@ -3,6 +3,7 @@
 use App\Controllers\CreateNodeAction;
 use App\Controllers\DeleteNodeAction;
 use App\Controllers\GetAllAction;
+use App\Controllers\UpdateNodeAction;
 use App\Managers\TreeManager;
 use App\Repositories\TreeRepository;
 use Lib\Db\MySqlConnection;
@@ -39,6 +40,13 @@ $router = (new Router())
     ->post(
         '/delete',
         new DeleteNodeAction(
+            new TreeRepository($db),
+            new TreeManager($db)
+        )
+    )
+    ->postJson(
+        '/update',
+        new UpdateNodeAction(
             new TreeRepository($db),
             new TreeManager($db)
         )

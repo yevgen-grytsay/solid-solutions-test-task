@@ -53,4 +53,14 @@ class Request implements RequestInterface
     {
         return 'application/json' === ($this->server['HTTP_CONTENT_TYPE'] ?? '');
     }
+
+    public function getContent(): string
+    {
+        return file_get_contents('php://input');
+    }
+
+    public function getContentType(): string
+    {
+        return $this->server['HTTP_CONTENT_TYPE'] ?? 'text/html';
+    }
 }

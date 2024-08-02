@@ -48,3 +48,13 @@ export const deleteNode = id => {
         method: 'POST',
     })
 }
+
+export const updateNode = (id, data) => {
+    return fetch(`/update?id=${id}`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+}

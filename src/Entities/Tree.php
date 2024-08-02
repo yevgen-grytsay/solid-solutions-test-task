@@ -10,6 +10,7 @@ class Tree implements JsonSerializable
 {
     private array $created = [];
     private array $deleted = [];
+    private array $updated = [];
 
     private array $nodeIndex;
 
@@ -57,6 +58,17 @@ class Tree implements JsonSerializable
         $this->deleted = [];
 
         return $deleted;
+    }
+
+    /**
+     * @return Node[]
+     */
+    public function popUpdated(): array
+    {
+        $updated = $this->updated;
+        $this->updated = [];
+
+        return $updated;
     }
 
     public function jsonSerialize(): array
@@ -111,5 +123,17 @@ class Tree implements JsonSerializable
                 ...$children,
             ];
         }
+    }
+
+    public function updateNode(int $id, array $data): void
+    {
+        // $node = Reflection::populatePublicFields(new Node(), $this->getProtoNodeById($id));
+
+        $data = array_intersect_key($data, array_flip(['name']));
+
+        $this->updated[] = [
+            'id' => $id,
+            'data' => $data,
+        ];
     }
 }

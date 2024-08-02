@@ -8,6 +8,7 @@ use Lib\Router\RequestHandlerInterface;
 use Lib\Router\RequestPredicateBuilder;
 use Lib\Router\RequestPredicateInterface;
 use Lib\Router\UnknownResourceException;
+use Stringable;
 use Throwable;
 
 class Router
@@ -59,6 +60,22 @@ class Router
         return $this;
     }
 
+    public function postJson(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
+    {
+        $predicate = $pathOrPredicate instanceof RequestPredicateInterface
+            ? RequestPredicateBuilder::from($pathOrPredicate)
+            : RequestPredicateBuilder::create()->withPath($pathOrPredicate);
+
+        $predicate = $predicate->withHttpMethod('POST')->withContentType('application/json');
+
+        $this->routes[] = [
+            'predicate' => $predicate,
+            'handler' => $handler,
+        ];
+
+        return $this;
+    }
+
     public function dispatch(Request $request): ResponseInterface
     {
         foreach ($this->routes as $item) {
@@ -70,7 +87,10 @@ class Router
                 try {
                     return $handler->handle($request);
                 } catch (Throwable $e) {
-                    throw new HandlerException(sprintf('Handler failed: %s. Error: %s', $handler, $e->getMessage()), $e);
+                    $handlerString = $handler instanceof Stringable
+                        ? (string) $handler
+                        : get_class($handler);
+                    throw new HandlerException(sprintf('Handler failed: %s. Error: %s', $handlerString, $e->getMessage()), $e);
                 }
             }
         }

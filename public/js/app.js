@@ -1,5 +1,5 @@
 /* global $, bootstrap */
-import { createNode, deleteNode, getAllNodes } from './api.js'
+import { createNode, deleteNode, updateNode, getAllNodes } from './api.js'
 import TreeComponent from './tree-component.js'
 
 function unblockUi() {
@@ -57,6 +57,11 @@ const initApp = () => {
     $(component).on(TreeComponent.EVENT_DELETE_NODE, (e, { id }) => {
         blockUi()
         deleteNode(id).then(refresh).finally(unblockUi)
+    })
+
+    $(component).on(TreeComponent.EVENT_UPDATE_NODE, (e, { id, name }) => {
+        blockUi()
+        updateNode(id, { name }).then(refresh).finally(unblockUi)
     })
 }
 
