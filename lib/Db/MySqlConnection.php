@@ -4,6 +4,7 @@ namespace Lib\Db;
 
 use PDO;
 use RuntimeException;
+use Throwable;
 
 class MySqlConnection implements ConnectionInterface
 {
@@ -74,5 +75,27 @@ class MySqlConnection implements ConnectionInterface
     public function createQuery(): QueryInterface
     {
         throw new RuntimeException('Not implemented: ' . __METHOD__);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function transaction(callable $callback, $isolationLevel = ConnectionInterface::REPEATABLE_READ): mixed
+    {
+        $this->pdo->query("SET TRANSACTION ISOLATION LEVEL {$isolationLevel}");
+        $this->pdo->beginTransaction(); // todo check return value
+
+        try {
+            $result = call_user_func($callback, $this);
+            $this->pdo->commit(); // todo check return value
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack(); // todo check return value
+            }
+
+            throw $e;
+        }
+
+        return $result;
     }
 }

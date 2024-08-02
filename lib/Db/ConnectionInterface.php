@@ -4,6 +4,8 @@ namespace Lib\Db;
 
 interface ConnectionInterface
 {
+    public const REPEATABLE_READ = 'REPEATABLE READ';
+
     public function all(string $table): array;
 
     public function get(string $table, int $id): ?array;
@@ -15,4 +17,6 @@ interface ConnectionInterface
     public function delete(string $table, int $id): void;
 
     public function createQuery(): QueryInterface;
+
+    public function transaction(callable $callback, $isolationLevel = null): mixed;
 }

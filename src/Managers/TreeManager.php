@@ -17,6 +17,13 @@ class TreeManager
 
     public function save(Tree $tree): void
     {
+        $this->db->transaction(function () use ($tree) {
+            $this->saveTree($tree);
+        });
+    }
+
+    private function saveTree(Tree $tree): void
+    {
         $deletedIdList = $tree->popDeletedIds();
         foreach ($deletedIdList as $id) {
             $this->db->delete(TreeRepository::TABLE_NAME, $id);
