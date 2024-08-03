@@ -2,7 +2,7 @@
 
 namespace Lib\Router;
 
-use Lib\Request;
+use Lib\RequestInterface;
 
 class CallableRequestPredicate implements RequestPredicateInterface
 {
@@ -17,7 +17,7 @@ class CallableRequestPredicate implements RequestPredicateInterface
     }
 
     /** @psalm-suppress MixedInferredReturnType */
-    public function match(Request $request): bool
+    public function match(RequestInterface $request): bool
     {
         /** @psalm-suppress MixedReturnStatement */
         return call_user_func($this->predicate, $request);

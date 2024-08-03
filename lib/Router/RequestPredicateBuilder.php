@@ -4,7 +4,7 @@ namespace Lib\Router;
 
 use Lib\Request;
 
-class RequestPredicateBuilder implements RequestPredicateInterface
+class RequestPredicateBuilder
 {
     /**
      * @var RequestPredicateInterface[]
@@ -75,14 +75,8 @@ class RequestPredicateBuilder implements RequestPredicateInterface
         return $obj;
     }
 
-    public function match(Request $request): bool
+    public function build(): RequestPredicateInterface
     {
-        foreach ($this->predicates as $p) {
-            if (false === $p->match($request)) {
-                return false;
-            }
-        }
-
-        return true;
+        return CompositeRequestPredicate::from($this->predicates);
     }
 }

@@ -10,7 +10,7 @@ use Lib\Db\MySqlConnection;
 use Lib\ErrorRenderer;
 use Lib\Request;
 use Lib\Router;
-use Lib\Router\NotFoundHandler;
+use Lib\Router\NotFoundRequestHandler;
 use Lib\Router\StaticHtmlRequestHandler;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -51,7 +51,7 @@ $router = (new Router())
             new TreeManager($db)
         )
     )
-    ->tap(new NotFoundHandler())
+    ->tap(new NotFoundRequestHandler())
 ;
 
 

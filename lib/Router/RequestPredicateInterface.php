@@ -2,9 +2,9 @@
 
 namespace Lib\Router;
 
-use Lib\Request;
+use Lib\RequestInterface;
 
 interface RequestPredicateInterface
 {
-    public function match(Request $request): bool;
+    public function match(RequestInterface $request): bool;
 }

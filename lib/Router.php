@@ -30,11 +30,13 @@ class Router
 
     public function get(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
     {
-        $predicate = $pathOrPredicate instanceof RequestPredicateInterface
+        $builder = $pathOrPredicate instanceof RequestPredicateInterface
             ? RequestPredicateBuilder::from($pathOrPredicate)
             : RequestPredicateBuilder::create()->withPath($pathOrPredicate);
 
-        $predicate = $predicate->withHttpMethod('GET');
+        $predicate = $builder
+            ->withHttpMethod('GET')
+            ->build();
 
         $this->routes[] = [
             'predicate' => $predicate,
@@ -46,11 +48,13 @@ class Router
 
     public function post(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
     {
-        $predicate = $pathOrPredicate instanceof RequestPredicateInterface
+        $builder = $pathOrPredicate instanceof RequestPredicateInterface
             ? RequestPredicateBuilder::from($pathOrPredicate)
             : RequestPredicateBuilder::create()->withPath($pathOrPredicate);
 
-        $predicate = $predicate->withHttpMethod('POST');
+        $predicate = $builder
+            ->withHttpMethod('POST')
+            ->build();
 
         $this->routes[] = [
             'predicate' => $predicate,
@@ -62,11 +66,14 @@ class Router
 
     public function postJson(string|RequestPredicateInterface $pathOrPredicate, RequestHandlerInterface $handler): static
     {
-        $predicate = $pathOrPredicate instanceof RequestPredicateInterface
+        $builder = $pathOrPredicate instanceof RequestPredicateInterface
             ? RequestPredicateBuilder::from($pathOrPredicate)
             : RequestPredicateBuilder::create()->withPath($pathOrPredicate);
 
-        $predicate = $predicate->withHttpMethod('POST')->withContentType('application/json');
+        $predicate = $builder
+            ->withHttpMethod('POST')
+            ->withContentType('application/json')
+            ->build();
 
         $this->routes[] = [
             'predicate' => $predicate,

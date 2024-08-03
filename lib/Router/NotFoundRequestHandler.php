@@ -6,7 +6,7 @@ use Lib\RequestInterface;
 use Lib\Response;
 use Lib\ResponseInterface;
 
-class NotFoundHandler implements RequestHandlerInterface
+class NotFoundRequestHandler implements RequestHandlerInterface
 {
     public function handle(RequestInterface $request): ResponseInterface
     {
