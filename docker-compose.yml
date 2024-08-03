@@ -9,7 +9,7 @@ services:
       - './docker/services/php/conf_d/php.ini:/usr/local/etc/php/conf.d/99-custom.ini'
     links:
       - mysql
-    restart: always
+    restart: unless-stopped
     environment:
       PHP_IDE_CONFIG: serverName=defaultServer
 
@@ -20,7 +20,7 @@ services:
       - '33006:3306'
     volumes:
       - './docker/data/mysql:/var/lib/mysql'
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: 'qwe123'
       MYSQL_DATABASE: 'app'
