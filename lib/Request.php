@@ -5,7 +5,6 @@ namespace Lib;
 /** @psalm-api  */
 class Request implements RequestInterface
 {
-
     public readonly array $get;
 
     public readonly array $post;

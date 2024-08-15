@@ -21,7 +21,7 @@ class Arr
     {
         if (is_string($indexFncOrField)) {
             // $indexFnc = fn($item) => self::get($item, $indexFncOrField);
-            $indexFnc = function($item) use ($indexFncOrField) {
+            $indexFnc = function ($item) use ($indexFncOrField) {
                 return self::get($item, $indexFncOrField);
             } ;
         } else {

@@ -21,7 +21,7 @@ class Router
     public function tap(RequestHandlerInterface $handler): static
     {
         $this->routes[] = [
-            'predicate' => new CallableRequestPredicate(fn() => true),
+            'predicate' => new CallableRequestPredicate(fn () => true),
             'handler' => $handler,
         ];
 
